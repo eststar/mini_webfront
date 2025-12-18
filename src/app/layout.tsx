@@ -13,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 const chiron = Chiron_GoRound_TC({
+  weight: "400",
   variable: "--font-chiron",
-  subsets: ["latin"],
+  subsets: [],
+  display:'swap',
+  preload: false,
   fallback: ["sans-serif"],
 })
 
@@ -29,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="kor">
+    <html lang="ko">
       <body
         className={`${chiron.className} ${chiron.variable} antialiased`}
       >
