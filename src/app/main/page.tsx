@@ -53,7 +53,7 @@ export default function IntegratedMapPage() {
             <span className="text-orange-500">
                 PEECE
             </span>
-            <span className="ml-1 text-black">
+            <span className="ml-1 text-slate-700">
                 MAKER
             </span>
         </h1>
@@ -102,42 +102,46 @@ export default function IntegratedMapPage() {
             </div>
 
 
-            <motion.div
-                initial={{ y: 120, opacity: 1 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                    transform: "translateZ(0)",
-                    backfaceVisibility: "hidden",
-                    WebkitBackfaceVisibility: "hidden"
-                }}
-                className="absolute bottom-6 left-0 right-0 z-30 flex justify-center pointer-events-none"
+           <motion.div
+    initial={{ y: 120, opacity: 1 }}
+    animate={{ y: 0, opacity: 1 }}
+    transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    style={{
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
+        WebkitBackfaceVisibility: "hidden"
+    }}
+    className="absolute bottom-6 left-0 right-0 z-30 flex justify-center pointer-events-none"
+>
+    <div className="flex items-center p-1.5 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-[30px] md:rounded-[40px] shadow-2xl pointer-events-auto relative isolation-isolate">
+        {menuItems.map((item) => (
+            <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`relative px-7 py-4 md:px-10 md:py-5 rounded-[25px] md:rounded-[35px] transition-colors duration-300 flex items-center justify-center cursor-pointer ${
+                    activeTab === item.id ? 'text-white' : 'text-slate-700 hover:text-black'
+                }`}
             >
-                <div className="flex items-center p-1.5 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-[30px] md:rounded-[40px] shadow-2xl pointer-events-auto relative isolation-isolate">
-                    {menuItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => setActiveTab(item.id)}
-                            className={`relative px-7 py-4 md:px-10 md:py-5 rounded[25px] md:rounded-[35px] transition-colors duration-300flex items-center justify-center z-10 cursor-pointer${
-                                activeTab === item.id ? 'text-white' : 'text-slate-500 hover:text-black'}
-                            `}
-                        >
-                            <span className="text-2xl md:text-3xl relative z-20 transition-transform active:scale-75">
-                                {item.icon}
-                            </span>
+             
+                <span className={`text-2xl md:text-3xl relative z-30 transition-all duration-300 active:scale-75 ${
+                    activeTab === item.id ? 'text-white' : 'text-slate-700'
+                }`}>
+                    {item.icon}
+                </span>
 
-                            {activeTab === item.id && (
-                                <motion.div
-                                    layoutId="active-pill"
-                                    className="absolute inset-0 bg-orange-500/90 rounded-[25px] md:rounded-[35px]"
-                                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                    style={{ transform: "translateZ(0)" }}
-                                />
-                            )}
-                        </button>
-                    ))}
-                </div>
-            </motion.div>
+                {activeTab === item.id && (
+                    <motion.div
+                        layoutId="active-pill"
+                      
+                        className="absolute inset-0 bg-orange-500/90 rounded-[25px] md:rounded-[35px] z-10"
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        style={{ transform: "translateZ(0)" }}
+                    />
+                )}
+            </button>
+        ))}
+    </div>
+</motion.div>
         </main>
     );
 }
