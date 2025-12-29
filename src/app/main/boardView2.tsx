@@ -43,7 +43,6 @@ export default function BoardView() {
         <div className="w-full h-full flex items-center justify-center pt-24 pb-32 md:pt-32 md:pb-40 px-4 md:px-8 bg-transparent">
             <div className="w-full max-w-5xl h-[75vh] md:h-187.5 bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[30px] md:rounded-[50px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden text-slate-900">
 
-
                 <div className="flex-1 overflow-y-auto custom-scrollbar bg-white/5 touch-pan-y overflow-x-hidden">
                     <div className="flex flex-col">
                         <AnimatePresence>
@@ -55,7 +54,7 @@ export default function BoardView() {
                                     exit={{ opacity: 0 }}
                                     layout
                                     className="group flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 px-6 md:px-10 py-6 md:py-8 border-b border-white/20 hover:bg-white/40 transition-all cursor-pointer"
-                                >
+                                    >
                                     <div className="md:col-span-9 flex flex-col gap-1 md:gap-2">
                                         <div className="flex items-center gap-2">
                                             <span className="text-slate-400 font-black text-[10px] md:text-sm italic">#{post.id}</span>

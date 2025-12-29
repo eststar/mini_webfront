@@ -9,24 +9,24 @@ export default function Page() {
         initial: { opacity: 0 },
         animate: { opacity: 1, transition: { staggerChildren: 0.2 } }
     };
-
     const itemVars: Variants = {
-    initial: { opacity: 0, y: 30 },
-    animate: { 
-        opacity: 1, 
-        y: 0, 
-        transition: { 
-            duration: 0.6, // 살짝 더 빠르게
-            ease: "easeOut"
-        } 
-    }
-};
+        initial: { opacity: 0, y: 30 },
+        animate: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut"
+            }
+        }
+    };
 
     return (
-      
+
         <main className="relative w-full min-h-screen bg-black flex items-center justify-center overflow-x-hidden">
-    
+
             <div className="fixed inset-0 z-0">
+                {/* 첫 화면 비디오 */}
                 <video
                     autoPlay loop muted playsInline preload="auto"
                     poster="/jeju.png"
@@ -34,35 +34,34 @@ export default function Page() {
                 >
                     <source src="/jeju.mp4" type="video/mp4" />
                 </video>
-                {/* Tailwind v4 bg-linear-to-b 사용 */}
+
                 <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-black/80" />
             </div>
 
-            
+
             <motion.div
                 variants={containerVars}
                 initial="initial"
                 animate="animate"
-                className="relative z-20 flex flex-col items-center text-center px-4 w-full py-16 md:py-0"
-            >
+                className="relative z-20 flex flex-col items-center text-center px-4 w-full py-16 md:py-0">
 
+                {/*타이틀 */}
                 <motion.h1
                     variants={itemVars}
-                    className="text-[14vw] md:text-[8vw] font-[1000] tracking-widest uppercase leading-none text-orange-500"
-                >
+                    className="text-[14vw] md:text-[8vw] font-[1000] tracking-widest uppercase leading-none text-orange-500" >
                     PEECE <span className="text-white">MAKER</span>
                 </motion.h1>
 
                 <motion.div
                     variants={itemVars}
-                    className="w-24 h-1 bg-transparent my-6 md:my-4"
-                />
+                    className="w-24 h-1 bg-transparent my-6 md:my-4"/>
 
 
                 <motion.div variants={itemVars} className="space-y-6">
                     <p className="text-xl md:text-4xl font-black tracking-tight text-white uppercase italic">
                         The Direct Path to Peace
                     </p>
+                    {/* 사이트 설명 */}
                     <div className="max-w-2xl text-[14px] md:text-lg text-zinc-400 font-light leading-relaxed break-keep">
                         <p>
                             PEECE MAKER는 GPS 정보를 통해 <br className="hidden md:block" />
@@ -81,15 +80,14 @@ export default function Page() {
                     </div>
                 </motion.div>
 
-
+                {/* 버튼 */}
                 <motion.button
-    variants={itemVars}
-    whileTap={{ scale: 0.95 }}
-    onClick={() => router.push('/main')}
-    className="mt-12 px-10 md:px-24 py-5 md:py-6 bg-white/20 backdrop-blur-2xl text-white border border-white/20 text-sm md:text-lg rounded-4xl hover:text-orange-500 cursor-pointer font-[950] tracking-[0.2em] md:tracking-[0.5em] uppercase"
->
-    EXPLORE YOUR HEAVEN
-</motion.button>
+                    variants={itemVars}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => router.push('/main')}
+                    className="mt-12 px-10 md:px-24 py-5 md:py-6 bg-white/20 backdrop-blur-2xl text-white border border-white/20 text-sm md:text-lg rounded-4xl hover:text-orange-500 cursor-pointer font-[950] tracking-[0.2em] md:tracking-[0.5em] uppercase">
+                    EXPLORE YOUR HEAVEN
+                </motion.button>
             </motion.div>
         </main>
     );

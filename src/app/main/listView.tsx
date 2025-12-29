@@ -15,9 +15,10 @@ interface Toilet {
 export default function ListView() {
     const [toilets, setToilets] = useState<Toilet[]>([]);
 
-
+    // 개발용 사용자 위치
     const fixedUserLoc = { lat: 33.5003464, lng: 126.531151 };
 
+    // 거리 측정 함수
     const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const R = 6371;
         const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -29,6 +30,7 @@ export default function ListView() {
         return R * c;
     };
 
+    
     useEffect(() => {
         fetch("/data/toilets.json")
             .then((res) => res.json())

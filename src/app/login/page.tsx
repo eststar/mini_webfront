@@ -1,11 +1,15 @@
 "use client";
 import { motion, Variants } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { BsGoogle } from "react-icons/bs";
 import { SiNaver } from "react-icons/si";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const containerVars = {
     initial: { opacity: 0 },
@@ -27,6 +31,52 @@ export default function LoginPage() {
     },
   };
 
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      alert("제대로 입력하세요")
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          username: email,
+          password: password,
+        }),
+      });
+
+      if (response.ok) {
+        // const data = await response.json();
+
+        // if (data.token || data.accessToken) {
+        //   localStorage.setItem("token", data.token || data.accessToken);
+        // }
+
+        alert("로그인 성공")
+        router.push("/main")
+      }
+      else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`로그인 실패`);
+      }
+    } catch (error) {
+      alert(`로그인 실패`);
+      console.error(error);
+    } finally {
+      setIsLoading(false)
+    }
+
+  }
+
   return (
     <main className="fixed inset-0 overflow-hidden flex items-center justify-center p-6">
 
@@ -46,7 +96,8 @@ export default function LoginPage() {
         className="relative w-full max-w-lg z-10"
       >
         <div className="relative overflow-hidden rounded-[40px] bg-white/30 backdrop-blur-[30px] border border-white/60 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.05)] p-12 md:p-16">
-          <div className="relative z-10">
+          <form onSubmit={handleLogin} className="relative z-10">
+            
             {/* HEADER */}
             <motion.div variants={itemVars} className="mb-14">
               <h2 className="text-5xl font-[950] tracking-tighter uppercase text-slate-800 ">
@@ -61,11 +112,15 @@ export default function LoginPage() {
             <motion.div variants={itemVars} className="space-y-4">
               <input
                 type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="EMAIL ADDRESS"
                 className="w-full bg-white/40 border border-white px-7 py-5 rounded-2xl outline-none focus:bg-white/80 transition-all text-slate-700 placeholder:text-slate-400 text-sm tracking-widest font-bold"
               />
               <input
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="PASSWORD"
                 className="w-full bg-white/40 border border-white px-7 py-5 rounded-2xl outline-none focus:bg-white/80 transition-all text-slate-700 placeholder:text-slate-400 text-sm tracking-widest font-bold"
               />
@@ -73,12 +128,12 @@ export default function LoginPage() {
 
 
             <motion.div variants={itemVars} className="group relative w-full mt-10">
-              <button className="relative w-full py-6 cursor-pointer active:scale-95 transition-all duration-500 rounded-2xl overflow-hidden shadow-xl shadow-orange-200/30">
+              <button type="submit" disabled={isLoading} className="relative w-full py-6 cursor-pointer active:scale-95 transition-all duration-500 rounded-2xl overflow-hidden shadow-xl shadow-orange-200/30">
 
                 <div className="absolute inset-0 bg-orange-500 transition-colors duration-500 group-hover:bg-orange-600" />
                 <div className="absolute inset-0 rounded-2xl border border-white/20 z-20" />
                 <span className="relative z-30 text-white font-[950] tracking-[0.5em] uppercase text-sm">
-                  Log In
+                  {isLoading ? "로그인중" : "Log In"}
                 </span>
               </button>
             </motion.div>
@@ -110,7 +165,7 @@ export default function LoginPage() {
                 ← Return
               </button>
             </motion.div>
-          </div>
+          </form>
         </div>
       </motion.div>
     </main>

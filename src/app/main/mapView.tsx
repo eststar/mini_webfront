@@ -29,7 +29,7 @@ export default function MapView() {
         fetch("/data/toilets.json")
             .then((res) => res.json())
             .then((data) => {
-                // 핵심: data가 아니라 data.toilet_info를 가져와야 한다!
+            
                 if (data && data.toilet_info) {
                     const sanitized = data.toilet_info.map((t: any) => ({
                         ...t,

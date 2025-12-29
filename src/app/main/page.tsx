@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { FaMapMarkerAlt, FaList, FaClipboardList } from "react-icons/fa";
+import { FaMapMarkerAlt, FaList, FaClipboardList, FaChartPie   } from "react-icons/fa";
+
 import MapView from "./mapView";
 import ListView from "./listView";
 import BoardView from "./boardView2"
+import ChartView from "./chartView";
 export default function MainPage() {
     const router = useRouter();
     
@@ -34,7 +36,7 @@ export default function MainPage() {
 
     const menuItems = [
         { icon: <FaMapMarkerAlt />, id: 0 },
-        { icon: <FaList />, id: 1 },
+        { icon: <FaChartPie />, id: 1 },
         { icon: <FaClipboardList />, id: 2 },
     ];
 
@@ -42,7 +44,7 @@ export default function MainPage() {
         if (!isClient) return <MapView />; 
         switch (activeTab) {
             case 0: return <MapView />;
-            case 1: return <ListView />;
+            case 1: return <ChartView />;
             case 2: return <BoardView />;
             default: return <MapView />;
         }
