@@ -2,17 +2,23 @@
 
 import { Map, CustomOverlayMap, MarkerClusterer, useKakaoLoader } from "react-kakao-maps-sdk";
 import { useState, useEffect } from "react";
-import { FaMale, FaFemale } from "react-icons/fa";
+import { FaMale, FaFemale, FaWheelchair, FaBaby } from "react-icons/fa";
 import toast, { Toaster } from "react-hot-toast";
 
 
 let cachedToilets: Toilet[] = [];
 
 interface Toilet {
-    data_cd: string;
-    toilet_nm: string;
-    la_crdnt: number;
-    lo_crdnt: number;
+    dataCd: string;
+    toiletNm: string;
+    laCrdnt: number;
+    loCrdnt: number;
+    maleClosetCnt: number;
+    maleUrinalCnt: number;
+    femaleClosetCnt: number;
+    maleDspsnClosetCnt: number;
+    femaleDspsnClosetCnt: number;
+    diaperExhgTablYn: string;
 }
 
 export default function MapView() {
@@ -26,22 +32,26 @@ export default function MapView() {
     useEffect(() => {
         if (cachedToilets.length > 0) return;
 
-        fetch("/data/toilets.json")
-            .then((res) => res.json())
-            .then((data) => {
-            
-                if (data && data.toilet_info) {
-                    const sanitized = data.toilet_info.map((t: any) => ({
-                        ...t,
-                        la_crdnt: Number(t.la_crdnt),
-                        lo_crdnt: Number(t.lo_crdnt)
-                    }));
-                    cachedToilets = sanitized;
-                    setToilets(sanitized);
-                }
-            })
-            .catch((err) => console.error("지도 데이터 로드 실패:", err));
+        const fetchToilets = async () => {
+            try {
+                const response = await fetch("/back/api/test/toiletinfo/getallinfo");
+                const data = await response.json();
+
+                const list = data.toilet_info || data;
+                const st = list.map((t: any) => ({
+                    ...t
+                }));
+
+                setToilets(st);
+            } catch (err) {
+                console.error("데이터 로드 실패:", err);
+            }
+        };
+
+        fetchToilets();
     }, []);
+
+
 
     const handleMarkerClick = (name: string) => {
         toast.dismiss();
@@ -75,7 +85,7 @@ export default function MapView() {
         <div className="w-full h-full relative">
             <Toaster position="top-center" />
             <Map
-                center={{ lat: 33.51315888, lng: 126.5246321 }} 
+                center={{ lat: 33.51315888, lng: 126.5246321 }}
                 style={{ width: "100%", height: "100%" }}
                 level={3}
             >
@@ -101,21 +111,40 @@ export default function MapView() {
                     >
                         {toilets.map((toilet) => (
                             <CustomOverlayMap
-                                key={toilet.data_cd}
-                                position={{ lat: toilet.la_crdnt, lng: toilet.lo_crdnt }}
+                                key={toilet.dataCd}
+                                position={{ lat: toilet.laCrdnt, lng: toilet.loCrdnt }}
                                 yAnchor={1.2}
+                                clickable={true}
                             >
                                 <div
-                                    onClick={() => handleMarkerClick(toilet.toilet_nm)}
+                                    onClick={() => handleMarkerClick(toilet.toiletNm)}
                                     className="relative flex flex-col items-center group cursor-pointer"
                                 >
                                     <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-2xl shadow-xl transition-all bg-white border border-slate-200 group-hover:scale-110 group-hover:border-orange-500 group-hover:z-50">
                                         <span className="text-[10px] md:text-xs font-black uppercase text-zinc-900 whitespace-nowrap">
-                                            {toilet.toilet_nm}
+                                            {toilet.toiletNm}
                                         </span>
                                         <div className="flex gap-0.5 items-center">
-                                            <FaMale className="text-cyan-500 text-[10px]" />
-                                            <FaFemale className="text-red-500 text-[10px]" />
+                                            {/* 남성 화장실 */}
+                                            {(Number(toilet.maleClosetCnt) > 0 || Number(toilet.maleUrinalCnt) > 0) && (
+                                                <FaMale className="text-cyan-500 text-[10px] md:text-xs" />
+                                            )}
+
+                                            {/* 여성 화장실 */}
+                                            {Number(toilet.femaleClosetCnt) > 0 && (
+                                                <FaFemale className="text-red-500 text-[10px] md:text-xs" />
+                                            )}
+
+                                            {/* 장애인 시설 */}
+                                            {(Number(toilet.maleDspsnClosetCnt) > 0 || Number(toilet.femaleDspsnClosetCnt) > 0) && (
+                                                <FaWheelchair className="text-blue-500 text-[10px] md:text-xs" />
+                                            )}
+
+                                            {/* 기저귀 교체대 */}
+                                            {toilet.diaperExhgTablYn === "Y" && (
+                                                <FaBaby className="text-lime-500 text-[10px] md:text-xs" />
+                                            )}
+
                                         </div>
                                     </div>
                                     <div className="w-2.5 h-2.5 rotate-45 -mt-1.5 bg-white border-r border-b border-slate-200" />

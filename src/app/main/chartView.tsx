@@ -9,18 +9,39 @@ import {
 import { FaShieldAlt, FaWheelchair, FaBaby, FaLayerGroup } from "react-icons/fa";
 
 const COLORS = ['#f97316', '#1e293b', '#64748b', '#94a3b8'];
-
+interface Toilet {
+    dataCd: string;
+    toiletNm: string;
+    emgncBellInstlYn: string;
+    toiletEntrncCctvInstlYn: string;
+    maleClosetCnt: number;
+    laCrdnt: number;
+    loCrdnt: number;
+}
 export default function ChartView() {
     const [rawToiletData, setRawToiletData] = useState<any[]>([]);
     const [filterMode, setFilterMode] = useState<'all' | 'secure' | 'accessible' | 'family'>('all');
-
+    let cachedToilets: Toilet[] = [];
+    
     useEffect(() => {
-        fetch("/data/toilets.json")
-            .then((res) => res.json())
-            .then((data) => {
-                if (data && data.toilet_info) setRawToiletData(data.toilet_info);
-            })
-            .catch((err) => console.error("데이터 로드 실패", err));
+        const fetchToilets = async () => {
+            try {
+                const response = await fetch("/back/api/test/toiletinfo/getallinfo");
+                const data = await response.json();
+
+                const list = data.toilet_info || data;
+                const sanitized = list.map((t: any) => ({
+                    ...t
+                   
+                }));
+
+                setRawToiletData(sanitized);
+            } catch (err) {
+                console.error("데이터 로드 실패:", err);
+            }
+        };
+
+        fetchToilets();
     }, []);
 
 
@@ -28,18 +49,18 @@ export default function ChartView() {
         if (!rawToiletData.length) return null;
         return {
             all: rawToiletData.length,
-            secure: rawToiletData.filter(t => t.emgnc_bell_instl_yn === 'Y' || t.toilet_entrnc_cctv_instl_yn === 'Y').length,
-            accessible: rawToiletData.filter(t => (Number(t.male_dspsn_closet_cnt) > 0) || (Number(t.female_dspsn_closet_cnt) > 0)).length,
-            family: rawToiletData.filter(t => t.diaper_exhg_tabl_yn === 'Y').length,
+            secure: rawToiletData.filter(t => t.emgncBellInstlYn === 'Y' || t.toiletEntrncCctvInstlYn === 'Y').length,
+            accessible: rawToiletData.filter(t => (Number(t.maleDspsnClosetCnt) > 0) || (Number(t.femaleDspsnClosetCnt) > 0)).length,
+            family: rawToiletData.filter(t => t.diaperExhgTablYn === 'Y').length,
         };
     }, [rawToiletData]);
 
 
     const filteredData = useMemo(() => {
         switch (filterMode) {
-            case 'secure': return rawToiletData.filter(t => t.emgnc_bell_instl_yn === 'Y' || t.toilet_entrnc_cctv_instl_yn === 'Y');
-            case 'accessible': return rawToiletData.filter(t => (Number(t.male_dspsn_closet_cnt) > 0) || (Number(t.female_dspsn_closet_cnt) > 0));
-            case 'family': return rawToiletData.filter(t => t.diaper_exhg_tabl_yn === 'Y');
+            case 'secure': return rawToiletData.filter(t => t.emgncBellInstlYn === 'Y' || t.toiletEntrncCctvInstlYn === 'Y');
+            case 'accessible': return rawToiletData.filter(t => (Number(t.maleDspsnClosetCnt) > 0) || (Number(t.femaleDspsnClosetCnt) > 0));
+            case 'family': return rawToiletData.filter(t => t.diaperExhgTablYn === 'Y');
             default: return rawToiletData;
         }
     }, [rawToiletData, filterMode]);
@@ -48,7 +69,7 @@ export default function ChartView() {
 
     const emdStats = useMemo(() => {
         const counts: any = {};
-        filteredData.forEach(t => { counts[t.emd_nm] = (counts[t.emd_nm] || 0) + 1; });
+        filteredData.forEach(t => { counts[t.emdNm] = (counts[t.emdNm] || 0) + 1; });
         return Object.entries(counts).map(([name, value]) => ({ name, value }))
             .sort((a: any, b: any) => b.value - a.value).slice(0, 7);
     }, [filteredData]);
@@ -56,8 +77,8 @@ export default function ChartView() {
     const genderStats = useMemo(() => {
         let male = 0, female = 0;
         filteredData.forEach(t => {
-            male += (Number(t.male_closet_cnt) || 0) + (Number(t.male_urinal_cnt) || 0);
-            female += (Number(t.female_closet_cnt) || 0);
+            male += (Number(t.maleClosetCnt) || 0) + (Number(t.maleUrinalCnt) || 0);
+            female += (Number(t.femaleClosetCnt) || 0);
         });
         return [
             { name: '남성', value: male, fill: '#00b8db' },
@@ -103,7 +124,7 @@ export default function ChartView() {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={emdStats}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0} tick={{ fill: '#1e293b' }} fontSize={12}/>
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0} tick={{ fill: '#1e293b' }} fontSize={12} />
                                 <YAxis hide />
                                 <Bar dataKey="value" fill="#f97316" radius={[10, 10, 0, 0]} barSize={40} isAnimationActive={true}>
                                     <LabelList
@@ -137,8 +158,7 @@ export default function ChartView() {
                                                 fill="white"
                                                 textAnchor="middle"
                                                 dominantBaseline="central"
-                                                className="font-black text-sm"
-                                            >
+                                                className="font-black text-sm">
                                                 {value}
                                             </text>
                                         );
@@ -161,8 +181,7 @@ export default function ChartView() {
                         className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-2xl shadow-2xl col-span-1 md:col-span-2"
                     >
                         <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-2xl font-[1000] text-slate-800 uppercase tracking-tighter ">Top 5 Toilet</h3>
-                            <span className="text-sm font-black text-orange-600 bg-orange-100 px-4 py-1 rounded-full">USER RATINGS</span>
+                            <h3 className="text-2xl font-[1000] text-slate-800 uppercase tracking-tighter ">Top 5 RATED Toilet</h3>
                         </div>
 
                         <div className="flex flex-col gap-4">

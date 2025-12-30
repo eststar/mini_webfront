@@ -3,31 +3,66 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { FaMapMarkerAlt, FaList, FaClipboardList, FaChartPie   } from "react-icons/fa";
+import { FaMapMarkerAlt, FaList, FaClipboardList, FaChartPie } from "react-icons/fa";
 
 import MapView from "./mapView";
 import ListView from "./listView";
-import BoardView from "./boardView2"
+import BoardView from "./boardView"
 import ChartView from "./chartView";
+
+interface UserData {
+    nickname?: string;
+    role?: string;
+    username? : string;
+}
+
 export default function MainPage() {
     const router = useRouter();
-    
-   
+
+
     const [activeTab, setActiveTab] = useState(0);
     const [isClient, setIsClient] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userData, setUserData] = useState<any>({});
 
     useEffect(() => {
-        
+
         setIsClient(true);
-        
-        
         const saved = localStorage.getItem("activeTab");
         if (saved) {
             setActiveTab(parseInt(saved));
         }
+
+        const checkAuth = async () => {
+            try {
+               
+                const res = await fetch("/back/api/members/myinfo", {
+                    method: "GET",
+                    
+                    credentials: "include", 
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setUserData(data);
+                    setIsLoggedIn(true);
+                    console.log("✅ 인증 성공:", data);
+                    console.log(data);
+                } else {
+                   
+                    setIsLoggedIn(false);
+                }
+            } catch (err) {
+                console.error("🚨 인증 체크 실패:", err);
+                setIsLoggedIn(false);
+            }
+        };
+
+        checkAuth();
+
     }, []);
 
-  
+
     useEffect(() => {
         if (isClient) {
             localStorage.setItem("activeTab", activeTab.toString());
@@ -41,12 +76,25 @@ export default function MainPage() {
     ];
 
     const renderContent = () => {
-        if (!isClient) return <MapView />; 
+        if (!isClient) return <MapView />;
         switch (activeTab) {
             case 0: return <MapView />;
             case 1: return <ChartView />;
             case 2: return <BoardView />;
             default: return <MapView />;
+        }
+    };
+
+    const handleAuth = () => {
+        if (isLoggedIn) {
+            document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            setIsLoggedIn(false);
+            alert("로그아웃 되었습니다.");
+            router.refresh();
+        } else {
+            router.push('/login');
         }
     };
 
@@ -67,17 +115,19 @@ export default function MainPage() {
                         </h1>
                     </div>
                 </div>
-                <button onClick={() => router.push('/login')}
-                    className="pointer-events-auto px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] text-xs md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600 active:scale-90 transition-all cursor-pointer">
-                    LOGIN
+                <button onClick={handleAuth}
+                    className="pointer-events-auto px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] text-xs md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600 active:scale-90 transition-all cursor-pointer"
+                    key={isLoggedIn ? "logout-btn" : "login-btn"}
+                >
+                    {isLoggedIn ? `${userData?.nickname}` : "LOG IN"}
                 </button>
             </motion.nav>
 
-        
+
             <div className="w-full h-full relative z-10 overflow-hidden">
                 <AnimatePresence mode="wait">
                     <motion.div
-                        key={isClient ? activeTab : "loading"}
+                        key={activeTab}
                         initial={{ opacity: 0, scale: 0.99 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 1.01 }}

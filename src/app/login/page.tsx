@@ -42,7 +42,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("/back/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,18 +55,11 @@ export default function LoginPage() {
       });
 
       if (response.ok) {
-        // const data = await response.json();
-
-        // if (data.token || data.accessToken) {
-        //   localStorage.setItem("token", data.token || data.accessToken);
-        // }
-
-        alert("로그인 성공")
         router.push("/main")
       }
       else {
         const errorData = await response.json().catch(() => ({}));
-        alert(`로그인 실패`);
+        alert(`로그인 실패(서버 문제)`);
       }
     } catch (error) {
       alert(`로그인 실패`);
@@ -97,7 +90,7 @@ export default function LoginPage() {
       >
         <div className="relative overflow-hidden rounded-[40px] bg-white/30 backdrop-blur-[30px] border border-white/60 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.05)] p-12 md:p-16">
           <form onSubmit={handleLogin} className="relative z-10">
-            
+
             {/* HEADER */}
             <motion.div variants={itemVars} className="mb-14">
               <h2 className="text-5xl font-[950] tracking-tighter uppercase text-slate-800 ">
@@ -133,7 +126,7 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-orange-500 transition-colors duration-500 group-hover:bg-orange-600" />
                 <div className="absolute inset-0 rounded-2xl border border-white/20 z-20" />
                 <span className="relative z-30 text-white font-[950] tracking-[0.5em] uppercase text-sm">
-                  {isLoading ? "로그인중" : "Log In"}
+                  {isLoading ? "로그인중..." : "Log In"}
                 </span>
               </button>
             </motion.div>
@@ -152,20 +145,20 @@ export default function LoginPage() {
                 <span className="text-2xl text-green-500"><SiNaver /></span>
               </button>
             </motion.div>
-
-
-            <motion.div variants={itemVars} className="mt-12 flex flex-col items-center gap-6">
-              <button className="text-[11px] font-black text-slate-400 tracking-[0.3em] uppercase hover:text-orange-500 transition-colors" onClick={() => router.push("/signin")}>
-                Create New Account
-              </button>
-              <button
-                onClick={() => router.back()}
-                className="text-[10px] font-bold text-slate-400 tracking-[0.5em] uppercase hover:text-orange-500 transition-colors"
-              >
-                ← Return
-              </button>
-            </motion.div>
           </form>
+
+          <motion.div variants={itemVars} className="mt-12 flex flex-col items-center gap-6">
+            <button className="text-[11px] font-black text-slate-400 tracking-[0.3em] uppercase hover:text-orange-500 transition-colors" onClick={() => router.push("/signin")}>
+              Create New Account
+            </button>
+            <button
+              onClick={() => router.back()}
+              className="text-[10px] font-bold text-slate-400 tracking-[0.5em] uppercase hover:text-orange-500 transition-colors"
+            >
+              ← Return
+            </button>
+          </motion.div>
+
         </div>
       </motion.div>
     </main>
