@@ -45,10 +45,7 @@ export default function BoardView() {
 
     return (
         <div className="w-full h-full flex items-center justify-center pt-24 pb-32 md:pt-32 md:pb-40 px-4 md:px-8 bg-transparent">
-            {/* 🦾 해결 포인트 1: 
-                전체 컨테이너의 initial/animate를 제거한다. 
-                MainPage에서 이미 감싸고 있으므로 여기서 또 주면 두 번 깜빡인다.
-            */}
+    
             <div className="w-full max-w-5xl h-[75vh] md:h-187.5 bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[30px] md:rounded-[50px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden text-slate-900">
                 
                 <div className="flex-1 overflow-y-auto custom-scrollbar bg-white/5 touch-pan-y overflow-x-hidden">
@@ -57,12 +54,9 @@ export default function BoardView() {
                             {filteredBoard.map((post) => (
                                 <motion.div
                                     key={post.id}
-                                    /* 🦾 해결 포인트 2: 
-                                       최초 렌더링 시의 initial을 false로 주거나, 
-                                       리스트 아이템의 개별 '등장' 애니메이션을 제거하고 '레이아웃 변경'과 '삭제'에만 집중한다.
-                                    */
+                                  
                                     layout
-                                    initial={false} // 👈 처음 나타날 때 슈루룩 하는 걸 막는다.
+                                    initial={false} 
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.2 }}
                                     className="group flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 px-6 md:px-10 py-6 md:py-8 border-b border-white/20 hover:bg-white/40 transition-all cursor-pointer"

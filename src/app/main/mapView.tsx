@@ -1,11 +1,10 @@
 "use client";
-
+import { motion, Variants } from "framer-motion";
 import { Map, CustomOverlayMap, MarkerClusterer, useKakaoLoader } from "react-kakao-maps-sdk";
 import { useState, useEffect } from "react";
-import { FaMale, FaFemale, FaWheelchair, FaBaby } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
-
-
+import { FaMale, FaFemale, FaWheelchair, FaBaby, FaMapMarkerAlt } from "react-icons/fa";
+import { FaPersonWalking } from "react-icons/fa6";
+import { MdGpsFixed } from "react-icons/md";
 let cachedToilets: Toilet[] = [];
 
 interface Toilet {
@@ -28,7 +27,22 @@ export default function MapView() {
     });
 
     const [toilets, setToilets] = useState<Toilet[]>(cachedToilets);
+    const [hoveredId, setHoveredId] = useState<string | null>(null);
+    const [level, setLevel] = useState(3);
+    const [map, setMap] = useState<kakao.maps.Map | null>(null);
 
+    const [myPos, setMyPos] = useState<{ lat: number; lng: number }>({
+        lat: 33.497,
+        lng: 126.537
+    });
+
+    const Spinner = () => (
+        <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            className="w-7 h-7 mx-auto border-4 border-white/10 border-t-orange-500 border-l-orange-500 rounded-full flex justify-center items-center"
+        />
+    );
     useEffect(() => {
         if (cachedToilets.length > 0) return;
 
@@ -51,48 +65,45 @@ export default function MapView() {
         fetchToilets();
     }, []);
 
+    
 
 
-    const handleMarkerClick = (name: string) => {
-        toast.dismiss();
-        toast.success(`${name}`, {
-            position: "top-center",
-            duration: 2000,
-            style: {
-                marginTop: "25px",
-                borderRadius: '50px',
-                background: '#ffffff',
-                color: '#181818',
-                fontWeight: '900',
-                border: '2px solid #f97316',
-                padding: '12px 24px',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-            },
-            iconTheme: {
-                primary: '#f97316',
-                secondary: '#fff',
-            },
-        });
-    };
 
     if (loading) return (
         <div className="flex h-full items-center justify-center font-black text-orange-500 animate-pulse text-2xl tracking-widest bg-white/10 backdrop-blur-md">
-            MAP LOADING...
+            <Spinner />
         </div>
     );
 
     return (
         <div className="w-full h-full relative">
-            <Toaster position="top-center" />
+
             <Map
-                center={{ lat: 33.51315888, lng: 126.5246321 }}
+                center={myPos}
                 style={{ width: "100%", height: "100%" }}
                 level={3}
+                onCreate={setMap}
+                onZoomChanged={(map) => setLevel(map.getLevel())}
             >
+
+                {/* 자기 위치 */}
+                <CustomOverlayMap position={myPos} zIndex={100}>
+                    <div className="relative flex items-center justify-center">
+
+                        <div className="absolute w-10 h-10 bg-stone-700/30 rounded-full animate-ping" />
+                        <div className="relative w-6 h-6 bg-stone-700/95 backdrop-blur-2xl rounded-full border border-white shadow-lg flex justify-center items-center">
+                            <FaPersonWalking className="text-xl text-stone-100" />
+                        </div>
+
+                    </div>
+                </CustomOverlayMap>
+
+
                 {toilets.length > 0 && (
                     <MarkerClusterer
                         averageCenter={true}
-                        minLevel={6}
+                        minLevel={3}
+
                         styles={[
                             {
                                 width: '60px',
@@ -113,47 +124,82 @@ export default function MapView() {
                             <CustomOverlayMap
                                 key={toilet.dataCd}
                                 position={{ lat: toilet.laCrdnt, lng: toilet.loCrdnt }}
-                                yAnchor={1.2}
                                 clickable={true}
+                                zIndex={hoveredId === toilet.dataCd ? 50 : 1}
                             >
-                                <div
-                                    onClick={() => handleMarkerClick(toilet.toiletNm)}
-                                    className="relative flex flex-col items-center group cursor-pointer"
+
+                                <div className="relative w-0 flex flex-col h-0 items-center justify-end"
+                                    onMouseEnter={() => setHoveredId(toilet.dataCd)}
+                                    onMouseLeave={() => setHoveredId(null)}
+                                    onClick={() => {
+                                        if (!map) return;
+                                        const targetPos = new kakao.maps.LatLng(toilet.laCrdnt, toilet.loCrdnt);
+                                        if (map.getLevel() > 2) {
+                                            map.setLevel(2);
+                                        }
+                                        map.panTo(targetPos);
+                                        setHoveredId(toilet.dataCd);
+                                    }}
                                 >
-                                    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-2xl shadow-xl transition-all bg-white border border-slate-200 group-hover:scale-110 group-hover:border-orange-500 group-hover:z-50">
-                                        <span className="text-[10px] md:text-xs font-black uppercase text-zinc-900 whitespace-nowrap">
-                                            {toilet.toiletNm}
-                                        </span>
-                                        <div className="flex gap-0.5 items-center">
-                                            {/* 남성 화장실 */}
-                                            {(Number(toilet.maleClosetCnt) > 0 || Number(toilet.maleUrinalCnt) > 0) && (
-                                                <FaMale className="text-cyan-500 text-[10px] md:text-xs" />
-                                            )}
 
-                                            {/* 여성 화장실 */}
-                                            {Number(toilet.femaleClosetCnt) > 0 && (
-                                                <FaFemale className="text-red-500 text-[10px] md:text-xs" />
-                                            )}
-
-                                            {/* 장애인 시설 */}
-                                            {(Number(toilet.maleDspsnClosetCnt) > 0 || Number(toilet.femaleDspsnClosetCnt) > 0) && (
-                                                <FaWheelchair className="text-blue-500 text-[10px] md:text-xs" />
-                                            )}
-
-                                            {/* 기저귀 교체대 */}
-                                            {toilet.diaperExhgTablYn === "Y" && (
-                                                <FaBaby className="text-lime-500 text-[10px] md:text-xs" />
-                                            )}
-
+                                    {(level <= 4) && (
+                                        <div className="relative flex flex-col items-center px-2 py-1.5 rounded-3xl bg-white/50 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.1)] border border-white/70 group-hover:border-orange-400/50 group-hover:shadow-orange-200/50 group-hover:scale-115 transition-all duration-300 z-20 mb-1">
+                                            <span className="text-[14px] font-[1000] text-slate-900 tracking-tight mb-2 max-w-37 truncate">
+                                                {toilet.toiletNm}
+                                            </span>
+                                            <div className="flex gap-1.5 items-center pt-2 border-t border-white/80 w-full justify-center">
+                                                {(Number(toilet.maleClosetCnt) > 0) && (
+                                                    <div className="w-10 h-7 flex items-center justify-center bg-cyan-50 rounded-xl text-cyan-600 shadow-sm border border-cyan-100/50">
+                                                        <FaMale size={16} />
+                                                    </div>
+                                                )}
+                                                {(Number(toilet.femaleClosetCnt) > 0) && (
+                                                    <div className="w-10 h-7 flex items-center justify-center bg-rose-50 rounded-xl text-rose-600 shadow-sm border border-rose-100/50">
+                                                        <FaFemale size={16} />
+                                                    </div>
+                                                )}
+                                                {(Number(toilet.maleDspsnClosetCnt) > 0 || Number(toilet.femaleDspsnClosetCnt) > 0) && (
+                                                    <div className="w-10 h-7 flex items-center justify-center bg-blue-50 rounded-xl text-blue-600 shadow-sm border border-blue-100/50">
+                                                        <FaWheelchair size={16} />
+                                                    </div>
+                                                )}
+                                                {toilet.diaperExhgTablYn === "Y" && (
+                                                    <div className="w-10 h-7 flex items-center justify-center bg-amber-50 rounded-xl text-amber-600 shadow-sm border border-amber-100/50">
+                                                        <FaBaby size={16} />
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
+                                    )}
+
+
+                                    <div className="relative h-6 w-6 flex items-center justify-center">
+                                        <div className="w-3.5 h-3.5 bg-orange-500 rounded-full shadow-md z-10 border border-white flex justify-center items-center text-center" />
+                                        <div className="absolute w-7 h-7 bg-orange-400/30 rounded-full animate-ping" />
                                     </div>
-                                    <div className="w-2.5 h-2.5 rotate-45 -mt-1.5 bg-white border-r border-b border-slate-200" />
                                 </div>
                             </CustomOverlayMap>
                         ))}
                     </MarkerClusterer>
                 )}
             </Map>
+            <div className="absolute bottom-8 right-3 z-999">
+                <button
+                    onClick={() => {
+                        if (!map) return;
+                        const pos = new kakao.maps.LatLng(myPos.lat, myPos.lng);
+                        if (map.getLevel() > 2) {
+                            map.setLevel(2);
+                        }
+                        map.panTo(pos);
+
+                    }}
+                    className="group relative w-14 h-14 bg-white/40 backdrop-blur-2xl border border-white/60  rounded-full   shadow-[0_0_20px_rgba(0,0,0,0.4)] flex items-center justify-center transition-all active:scale-90 hover:border-orange-500/50 cursor-pointer"
+                >
+
+                    <MdGpsFixed  className="text-slate-700 text-2xl group-hover:text-orange-500 transition-colors" />
+                </button>
+            </div>
         </div>
     );
 }

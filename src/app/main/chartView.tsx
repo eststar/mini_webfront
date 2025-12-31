@@ -82,7 +82,7 @@ export default function ChartView() {
         });
         return [
             { name: '남성', value: male, fill: '#00b8db' },
-            { name: '여성', value: female, fill: '#fb2c36' }
+            { name: '여성', value: female, fill: '#ff2056' }
         ];
     }, [filteredData]);
 
@@ -95,9 +95,9 @@ export default function ChartView() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
                         { id: 'all', label: '전체 시설', icon: <FaLayerGroup />, count: totalStats?.all, color: 'border-slate-400/20' },
-                        { id: 'secure', label: '비상벨, CCTV 설치 시설', icon: <FaShieldAlt />, count: totalStats?.secure, color: 'border-orange-500/20' },
+                        { id: 'secure', label: '비상벨, CCTV 설치 시설', icon: <FaShieldAlt />, count: totalStats?.secure, color: 'border-emerald-500/20' },
                         { id: 'accessible', label: '장애인 편의 시설', icon: <FaWheelchair />, count: totalStats?.accessible, color: 'border-blue-500/20' },
-                        { id: 'family', label: '유아 편의 시설', icon: <FaBaby />, count: totalStats?.family, color: 'border-emerald-500/20' },
+                        { id: 'family', label: '유아 편의 시설', icon: <FaBaby />, count: totalStats?.family, color: 'border-orange-500/20' },
                     ].map((btn) => (
                         <motion.button
                             key={btn.id}

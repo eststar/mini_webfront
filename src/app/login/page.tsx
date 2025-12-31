@@ -11,6 +11,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const Spinner = () => (
+    <motion.div
+      animate={{ rotate: 360 }}
+      transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+      className="w-7 h-7 mx-auto border-4 border-white/10 border-t-white border-l-white rounded-full flex justify-center items-center"
+    />
+  );
+
+
   const containerVars = {
     initial: { opacity: 0 },
     animate: {
@@ -126,7 +135,7 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-orange-500 transition-colors duration-500 group-hover:bg-orange-600" />
                 <div className="absolute inset-0 rounded-2xl border border-white/20 z-20" />
                 <span className="relative z-30 text-white font-[950] tracking-[0.5em] uppercase text-sm">
-                  {isLoading ? "로그인중..." : "Log In"}
+                  {isLoading ? <Spinner />: "Log In"}
                 </span>
               </button>
             </motion.div>
