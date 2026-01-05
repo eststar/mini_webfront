@@ -13,7 +13,7 @@ import ChartView from "./chartView";
 interface UserData {
     nickname?: string;
     role?: string;
-    username? : string;
+    username?: string;
 }
 
 export default function MainPage() {
@@ -35,11 +35,11 @@ export default function MainPage() {
 
         const checkAuth = async () => {
             try {
-               
+
                 const res = await fetch("/back/api/members/myinfo", {
                     method: "GET",
-                    
-                    credentials: "include", 
+
+                    credentials: "include",
                 });
 
                 if (res.ok) {
@@ -49,7 +49,7 @@ export default function MainPage() {
                     console.log("✅ 인증 성공:", data);
                     console.log(data);
                 } else {
-                   
+
                     setIsLoggedIn(false);
                 }
             } catch (err) {
@@ -115,11 +115,25 @@ export default function MainPage() {
                         </h1>
                     </div>
                 </div>
-                <button onClick={handleAuth}
-                    className="pointer-events-auto px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] text-xs md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600 active:scale-90 transition-all cursor-pointer"
+                <button
+                    onClick={handleAuth}
+                    className="group relative pointer-events-auto px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] text-xs md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600/85 active:scale-90 transition-all cursor-pointer overflow-hidden"
                     key={isLoggedIn ? "logout-btn" : "login-btn"}
                 >
-                    {isLoggedIn ? `${userData?.nickname}` : "LOG IN"}
+                    {isLoggedIn ? (
+                        <>
+                            
+                            <span className="inline-block group-hover:opacity-0 transition-opacity duration-200">
+                                {userData?.nickname}
+                            </span>
+                          
+                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                LOG OUT
+                            </span>
+                        </>
+                    ) : (
+                        "LOG IN"
+                    )}
                 </button>
             </motion.nav>
 

@@ -7,6 +7,7 @@ import {
     PieChart, Pie, Cell, Legend, LabelList
 } from 'recharts';
 import { FaShieldAlt, FaWheelchair, FaBaby, FaLayerGroup } from "react-icons/fa";
+import { MdBabyChangingStation } from "react-icons/md";
 
 const COLORS = ['#f97316', '#1e293b', '#64748b', '#94a3b8'];
 interface Toilet {
@@ -18,11 +19,43 @@ interface Toilet {
     laCrdnt: number;
     loCrdnt: number;
 }
+interface Review {
+    data_cd: string;
+    rating: number;
+}
+const RankItem = ({ item, index, type }: { item: any, index: number, type: 'top' | 'worst' }) => (
+    <motion.div
+        className="flex items-center justify-between p-4 bg-white/40 rounded-2xl border border-white/20 hover:bg-white/60 transition-all min-w-0 w-full"
+    >
+        {/* 왼쪽 섹션: 등수 + 이름 */}
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+            <span className={`text-xl font-black shrink-0 w-8 ${type === 'top' ? 'text-emerald-500' : 'text-red-400'}`}>
+                {index + 1}
+            </span>
+            <div className="min-w-0 flex-1">
+                <h4 className="font-bold text-slate-800 text-base md:text-lg truncate block" title={item.name}>
+                    {item.name}
+                </h4>
+                <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase">
+                    {item.reviewCount} Reviews
+                </p>
+            </div>
+        </div>
+        
+        {/* 오른쪽 섹션: 평점 */}
+        <div className={`flex items-center gap-1 bg-white px-3 py-1 rounded-xl shadow-sm border shrink-0 ml-2 ${type === 'top' ? 'border-emerald-100' : 'border-red-100'}`}>
+            <span className={`text-xs ${type === 'top' ? 'text-emerald-500' : 'text-red-500'}`}>★</span>
+            <span className="font-black text-slate-800 text-sm">{item.score}</span>
+        </div>
+    </motion.div>
+);
+
 export default function ChartView() {
     const [rawToiletData, setRawToiletData] = useState<any[]>([]);
     const [filterMode, setFilterMode] = useState<'all' | 'secure' | 'accessible' | 'family'>('all');
+    const [allReviews, setAllReviews] = useState<Review[]>([]);
     let cachedToilets: Toilet[] = [];
-    
+
     useEffect(() => {
         const fetchToilets = async () => {
             try {
@@ -32,9 +65,11 @@ export default function ChartView() {
                 const list = data.toilet_info || data;
                 const sanitized = list.map((t: any) => ({
                     ...t
-                   
-                }));
 
+                }));
+                const reviewRes = await fetch("/data/review.json");
+                const reviewData = await reviewRes.json();
+                setAllReviews(reviewData);
                 setRawToiletData(sanitized);
             } catch (err) {
                 console.error("데이터 로드 실패:", err);
@@ -86,6 +121,50 @@ export default function ChartView() {
         ];
     }, [filteredData]);
 
+    // 상위 & 하위 평점 데이터 계산
+    const { top5, worst5 } = useMemo(() => {
+        if (!allReviews.length || !filteredData.length) return { top5: [], worst5: [] };
+
+        // 집계
+        const ratingMap: Record<string, { total: number; count: number }> = {};
+        allReviews.forEach(rev => {
+            if (!ratingMap[rev.data_cd]) ratingMap[rev.data_cd] = { total: 0, count: 0 };
+            ratingMap[rev.data_cd].total += rev.rating;
+            ratingMap[rev.data_cd].count += 1;
+        });
+
+        // 2. 매칭 및 평균 계산
+        const evaluatedToilets = Object.entries(ratingMap)
+            .map(([dataCd, stats]) => {
+                const toilet = filteredData.find(t => t.dataCd === dataCd);
+                if (!toilet) return null;
+
+                const avgScore = parseFloat((stats.total / stats.count).toFixed(1));
+
+                
+                if (avgScore < 1.1) return null;
+                if (4.9 < avgScore ) return null
+
+                return {
+                    name: toilet.toiletNm,
+                    score: avgScore,
+                    reviewCount: stats.count
+                };
+            })
+            .filter((item): item is { name: string; score: number; reviewCount: number } => item !== null);
+
+        // TOP 5 추출 (점수 높은 순 -> 리뷰 많은 순)
+        const top5 = [...evaluatedToilets]
+            .sort((a, b) => b.score - a.score || b.reviewCount - a.reviewCount)
+            .slice(0, 5);
+
+        // WORST 5 추출 (점수 낮은 순 -> 리뷰 많은 순)
+        const worst5 = [...evaluatedToilets]
+            .sort((a, b) => a.score - b.score || b.reviewCount - a.reviewCount)
+            .slice(0, 5);
+
+        return { top5, worst5 };
+    }, [allReviews, filteredData]);
 
     return (
         <div className="w-full h-full relative overflow-y-auto pb-40 pt-32 px-4 md:px-8 custom-scrollbar bg-transparent">
@@ -94,10 +173,10 @@ export default function ChartView() {
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
-                        { id: 'all', label: '전체 시설', icon: <FaLayerGroup />, count: totalStats?.all, color: 'border-slate-400/20' },
-                        { id: 'secure', label: '비상벨, CCTV 설치 시설', icon: <FaShieldAlt />, count: totalStats?.secure, color: 'border-emerald-500/20' },
-                        { id: 'accessible', label: '장애인 편의 시설', icon: <FaWheelchair />, count: totalStats?.accessible, color: 'border-blue-500/20' },
-                        { id: 'family', label: '유아 편의 시설', icon: <FaBaby />, count: totalStats?.family, color: 'border-orange-500/20' },
+                        { id: 'all', label: '전체 시설', icon: <FaLayerGroup />, count: totalStats?.all, color: ' border-4  border-slate-400/40' },
+                        { id: 'secure', label: '비상벨, CCTV 설치 시설', icon: <FaShieldAlt />, count: totalStats?.secure, color: ' border-4  border-emerald-500/40' },
+                        { id: 'accessible', label: '장애인 편의 시설', icon: <FaWheelchair />, count: totalStats?.accessible, color: ' border-4  border-blue-500/40' },
+                        { id: 'family', label: '유아 편의 시설', icon: <MdBabyChangingStation />, count: totalStats?.family, color: ' border-4 border-orange-500/50' },
                     ].map((btn) => (
                         <motion.button
                             key={btn.id}
@@ -174,45 +253,29 @@ export default function ChartView() {
                         </ResponsiveContainer>
                     </motion.div>
 
-                    {/* 리뷰 상위 5개 */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-2xl shadow-2xl col-span-1 md:col-span-2"
-                    >
-                        <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-2xl font-[1000] text-slate-800 uppercase tracking-tighter ">Top 5 RATED Toilet</h3>
-                        </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 col-span-1 md:col-span-2">
 
-                        <div className="flex flex-col gap-4">
-                            {[
-                                { name: "제주4·3평화공원 1번 화장실", score: 4.9, reviewCount: 128 },
-                                { name: "함덕해수욕장 중앙 화장실", score: 4.7, reviewCount: 256 },
-                                { name: "한라산 탐방로 입구", score: 4.5, reviewCount: 89 },
-                                { name: "제주공항 P1 주차장", score: 4.4, reviewCount: 412 },
-                                { name: "성산일출봉 매표소 옆", score: 4.2, reviewCount: 167 }
-                            ].map((item, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ backgroundColor: "rgba(255,255,255,0.5)" }}
-                                    className="flex items-center justify-between p-5 bg-white/20 rounded-3xl border border-white/30 transition-all cursor-pointer">
-                                    <div className="flex items-center gap-6">
-                                        <span className={`text-2xl font-black ${index === 0 ? 'text-orange-500' : 'text-slate-400'}`}>
-                                            0{index + 1}
-                                        </span>
-                                        <div>
-                                            <h4 className="font-black text-slate-800 text-lg">{item.name}</h4>
-                                            <span className="text-xs font-bold text-slate-500 uppercase tracking-widest"> {item.reviewCount} Reviews</span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-1 bg-white px-4 py-2 rounded-2xl shadow-sm">
-                                        <span className="text-orange-500 font-black">★</span>
-                                        <span className="font-[1000] text-slate-800">{item.score}</span>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </motion.div>
+                        {/* TOP 5 */}
+                        <motion.div className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-2xl">
+                            <h3 className="text-2xl font-[1000] text-emerald-600 uppercase tracking-tighter mb-8">Top 5 Rated</h3>
+                            <div className="flex flex-col gap-4">
+                                {top5.map((item, index) => (
+                                    <RankItem key={`top-${index}`} item={item} index={index} type="top" />
+                                ))}
+                            </div>
+                        </motion.div>
+
+                        {/* WORST 5 */}
+                        <motion.div className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-2xl">
+                            <h3 className="text-2xl font-[1000] text-red-600 uppercase tracking-tighter mb-8">Worst 5 Rated</h3>
+                            <div className="flex flex-col gap-4">
+                                {worst5.map((item, index) => (
+                                    <RankItem key={`worst-${index}`} item={item} index={index} type="worst" />
+                                ))}
+                            </div>
+                        </motion.div>
+
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,260 @@
+"use client";
+import React from 'react'
+
+import { AnimatePresence, motion } from "framer-motion";
+import { Map, CustomOverlayMap, MarkerClusterer, useKakaoLoader } from "react-kakao-maps-sdk";
+import { useState, useEffect } from "react";
+import { FaMale, FaFemale, FaWheelchair, FaBaby, FaTimes, FaUserCircle } from "react-icons/fa";
+import { MdBabyChangingStation } from "react-icons/md";
+import Image from "next/image";
+import kmap from '@/assets/map.png';
+
+interface Toilet {
+    dataCd: string;
+    toiletNm: string;
+    laCrdnt: number;
+    loCrdnt: number;
+    maleClosetCnt: number;
+    maleUrinalCnt: number;
+    femaleClosetCnt: number;
+    maleDspsnClosetCnt: number;
+    femaleDspsnClosetCnt: number;
+    diaperExhgTablYn: string;
+    photo?: string;
+    rnAdres?: string;
+    lnmAdres?: string;
+    opnTimeInfo?: string;
+    telno?: string;
+    etcCn?: string;
+}
+
+interface Review {
+    id: number;
+    user: string;
+    rating: number;
+    text: string;
+    date: string;
+    data_cd: string;
+
+}
+
+interface ToiletPopupProps {
+    data: Toilet;
+    myPos: { lat: number; lng: number };
+    onClose: () => void;
+}
+
+export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) {
+
+    const kakaoMapUrl = `https://map.kakao.com/link/from/현재위치,${myPos.lat},${myPos.lng}/to/${data.toiletNm},${data.laCrdnt},${data.loCrdnt}`;
+    const [rating, setRating] = useState(5);
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [comment, setComment] = useState("");
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+
+                const response = await fetch('/data/review.json');
+                const allReviews: Review[] = await response.json();
+
+
+                const filtered = allReviews.filter(rev => rev.data_cd === data.dataCd);
+                setReviews(filtered);
+            } catch (err) {
+                console.error("리뷰 로드 실패: ", err);
+            }
+        };
+
+        fetchReviews();
+    }, [data.dataCd]);
+
+
+    const averageRating = reviews.length > 0
+        ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
+        : "0.0";
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 100, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: 100, x: "-50%" }}
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-32 left-1/2 z-9999 w-[80%] h-[75%] overflow-y-auto bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] shadow-2xl scrollbar-hide"
+
+        >
+            {/* 닫기 버튼 */}
+            <button
+                onClick={onClose}
+                className="absolute top-4 right-4 z-50 p-2 bg-black/10 backdrop-blur-md rounded-full text-white hover:bg-orange-500 transition-all"
+            >
+                <FaTimes size={16} />
+            </button>
+            {/* 사진 */}
+            <div className="relative h-60 w-full">
+                <img
+                    src={"https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1000&auto=format&fit=crop"}
+                    alt={data.toiletNm}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1000&auto=format&fit=crop";
+                    }}
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-6 right-6">
+
+                    <h2 className="flex flex-wrap items-center gap-2 text-2xl md:text-4xl font-[1000] text-white tracking-tighter drop-shadow-lg leading-tight">
+
+                        <span className="shrink-0">{data.toiletNm}</span>
+
+
+                        <a
+                            href={kakaoMapUrl}
+                            className="inline-flex ml-2 items-center transition-transform active:scale-90"
+                            target="_blank"
+                        >
+                            <Image
+                                src={kmap}
+                                alt="카카오맵"
+                                width={30}
+                                height={30}
+                                className="md:w-8.5 md:h-8.5 rounded-xl"
+                            />
+                        </a>
+                    </h2>
+                </div>
+
+            </div>
+            {/* 📋 2. DETAILS */}
+            <div className="p-6 space-y-4  ">
+                <div className="flex flex-row items-center w-full justify-between ic">
+                    <div className="flex flex-row gap-1.5">
+                        {(Number(data.maleClosetCnt) > 0) && (
+                            <div className="w-10 h-7 md:w-14 md:h-9 flex items-center justify-center bg-cyan-50 rounded-xl text-cyan-600 shadow-sm border border-cyan-100/50">
+                                <FaMale size={22} />
+                            </div>
+                        )}
+                        {(Number(data.femaleClosetCnt) > 0) && (
+                            <div className="w-10 h-7 md:w-14 md:h-9 flex items-center justify-center bg-rose-50 rounded-xl text-rose-600 shadow-sm border border-rose-100/50">
+                                <FaFemale size={22} />
+                            </div>
+                        )}
+                        {(Number(data.maleDspsnClosetCnt) > 0 || Number(data.femaleDspsnClosetCnt) > 0) && (
+                            <div className="w-10 h-7 md:w-14 md:h-9 flex items-center justify-center bg-blue-50 rounded-xl text-blue-600 shadow-sm border border-blue-100/50">
+                                <FaWheelchair size={22} />
+                            </div>
+                        )}
+                        {data.diaperExhgTablYn === "Y" && (
+                            <div className="w-10 h-7 md:w-14 md:h-9 flex items-center justify-center bg-amber-50 rounded-xl text-amber-600 shadow-sm border border-amber-100/50">
+                                <MdBabyChangingStation size={27} />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 평균 별점 */}
+                    <div className="flex items-center bg-orange-500 text-white px-3 py-1 rounded-full shadow-lg transform ">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
+                            <path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clipRule="evenodd" />
+                        </svg>
+                        <span className="font-black text-lg">{averageRating}</span>
+                    </div>
+
+                </div>
+                <div className="flex flex-col  mt-5">
+                    <span className="text-4xl font-black text-orange-500 uppercase">Address</span>
+                    <p className="text-slate-800 font-bold text-xl leading-tight">
+                        {data.rnAdres || data.lnmAdres || "주소 정보 없음"}
+                    </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 mt-5">
+                    <div className="flex flex-col">
+                        <span className="text-4xl font-black text-slate-700 uppercase ">Opening</span>
+                        <p className="text-xl font-extrabold text-slate-700 ">{data.opnTimeInfo || "정보없음"}</p>
+                    </div>
+
+                    <div className="flex flex-col border-white/20 ">
+                        <span className="text-4xl font-black text-slate-700 uppercase ">Contact</span>
+                        <p className="text-2xl font-extrabold text-slate-700">{data.telno || "번호없음"}</p>
+                    </div>
+                </div>
+                {data.etcCn && (
+                    <div className="flex flex-col">
+                        <span className="text-4xl font-black text-slate-700 uppercase">ETC</span>
+                        <p className="text-xl font-extrabold text-slate-700">{data.etcCn}</p>
+                    </div>
+                )}
+
+
+
+                {/* 리뷰 */}
+                <div className="mt-4 border-t border-white/20 pt-2 pb-10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+                        <h3 className="text-3xl md:text-4xl font-[1000] text-slate-700 uppercase ">
+                            Review
+                        </h3>
+                        <div className="flex gap-1  p-2 self-start sm:self-auto">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    onClick={() => setRating(star)}
+                                    className={`transition-all duration-200 ${star <= rating ? "text-orange-500 scale-110" : "text-slate-300"}`}
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        className="w-7 h-7 md:w-8 md:h-8"
+                                    >
+                                        <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    {/* 입력창 */}
+                    <div className="relative group">
+                        <textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="리뷰 작성"
+                            className="w-full bg-white/50 backdrop-blur-md border-2 border-white/50 rounded-4xl px-6 py-5 pr-20 font-bold text-slate-800 outline-none focus:border-orange-500/50 focus:bg-white/50 transition-all resize-none"
+                        />
+                        <button
+                            onClick={() => {
+                                console.log("리뷰 제출:", { rating, comment, toiletCd: data.dataCd });
+                                setComment("");
+                            }}
+                            className="absolute right-4 bottom-4 px-6 py-3 bg-orange-500 text-white rounded-2xl font-black text-sm hover:bg-orange-600 hover:scale-105 active:scale-95 transition-all shadow-lg"
+                        >
+                            POST
+                        </button>
+                    </div>
+
+                    {/* 리뷰목록 */}
+                    <div className="space-y-4 mt-5">
+                        {reviews.length > 0 ? (reviews.map((rev) => (
+                            <div key={rev.id} className="bg-white/40 backdrop-blur-md p-5 rounded-4xl border border-white/70 ">
+                                <div className="flex justify-between items-center mb-2">
+
+                                    <span className="font-black text-slate-800 flex flex-row">
+                                        <div className="w-5 h-5 md:w-6 md:h-6 mr-1 rounded-full text-slate-700 flex items-center justify-center text-5xl overflow-hidden">
+                                        <FaUserCircle />
+                                    </div>{rev.user}</span>
+                                    <div className="flex text-orange-500">
+                                        {[...Array(rev.rating)].map((_, i) => (
+                                            <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                                                <path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clipRule="evenodd" />
+                                            </svg>
+                                        ))}
+                                    </div>
+                                </div>
+                                <p className="text-slate-700 font-bold leading-relaxed">{rev.text}</p>
+                                <span className="text-[10px] text-slate-400 mt-2 block font-black uppercase tracking-tighter">{rev.date}</span>
+                            </div>
+                        ))) : (<div className="text-center py-10 text-slate-400 font-bold">아직 리뷰가 없어요... 첫 리뷰를 남겨보세요!</div>)}
+
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    )
+}

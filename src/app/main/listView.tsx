@@ -88,7 +88,7 @@ export default function ListView() {
                                         <FaMale className="text-cyan-600 text-xs" />
                                     </div>
                                     <div className="flex items-center gap-1.5 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">
-                                        <FaFemale className="text-red-600 text-xs" />
+                                        <FaFemale className="text-rose-600 text-xs" />
                                     </div>
                                 </div>
                             </div>

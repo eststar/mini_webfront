@@ -19,7 +19,6 @@ export default function LoginPage() {
     />
   );
 
-
   const containerVars = {
     initial: { opacity: 0 },
     animate: {
@@ -39,7 +38,6 @@ export default function LoginPage() {
       transition: { duration: 0.8, ease: [0.19, 1, 0.22, 1] }
     },
   };
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,10 +77,14 @@ export default function LoginPage() {
 
   }
 
+  const handleSocialLogin = (provider: 'google' | 'naver') => {
+    window.location.href = `/back/oauth2/authorization/${provider}`;
+  };
+
   return (
     <main className="fixed inset-0 overflow-hidden flex items-center justify-center p-6">
 
-      <div className="absolute inset-0 z-0 bg-linear-to-tr from-[#e1fbff] via-[#ffe9c5] to-[#e0f5ff]" />
+      <div className="absolute inset-0 z-0 bg-linear-to-tr from-[#638388] via-[#ffe9c5] to-[#e0f5ff]" />
 
 
       <motion.div
@@ -135,7 +137,7 @@ export default function LoginPage() {
                 <div className="absolute inset-0 bg-orange-500 transition-colors duration-500 group-hover:bg-orange-600" />
                 <div className="absolute inset-0 rounded-2xl border border-white/20 z-20" />
                 <span className="relative z-30 text-white font-[950] tracking-[0.5em] uppercase text-sm">
-                  {isLoading ? <Spinner />: "Log In"}
+                  {isLoading ? <Spinner /> : "Log In"}
                 </span>
               </button>
             </motion.div>
@@ -146,11 +148,11 @@ export default function LoginPage() {
 
 
             <motion.div variants={itemVars} className="grid grid-cols-2 gap-4">
-              <button className="flex items-center justify-center py-5 bg-white/40 border border-white rounded-2xl transition-all hover:bg-white/70 hover:shadow-md duration-300">
+              <button type="button" onClick={() => handleSocialLogin('google')} className="flex items-center justify-center py-5 bg-white/40 border border-white rounded-2xl transition-all hover:bg-white/70 hover:shadow-md duration-300">
                 <span className="text-2xl text-blue-600"><BsGoogle /></span>
               </button>
 
-              <button className="flex items-center justify-center py-5 bg-white/40 border border-white rounded-2xl transition-all hover:bg-white/70 hover:shadow-md duration-300">
+              <button type="button" onClick={() => handleSocialLogin('naver')} className="flex items-center justify-center py-5 bg-white/40 border border-white rounded-2xl transition-all hover:bg-white/70 hover:shadow-md duration-300">
                 <span className="text-2xl text-green-500"><SiNaver /></span>
               </button>
             </motion.div>

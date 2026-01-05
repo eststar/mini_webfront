@@ -48,7 +48,7 @@ export default function Page() {
                 {/*타이틀 */}
                 <motion.h1
                     variants={itemVars}
-                    className="text-[14vw] md:text-[8vw] font-[1000] tracking-widest uppercase leading-none text-orange-500/95" >
+                    className="text-[12vw] md:text-[8vw] font-[1000] tracking-widest uppercase leading-none text-orange-500/95" >
                     PEECE<span className="text-white/95">MAKER</span>
                 </motion.h1>
 
@@ -64,10 +64,14 @@ export default function Page() {
                     {/* 사이트 설명 */}
                     <div className=" text-[14px] md:text-lg text-zinc-300/90 font-light leading-relaxed break-keep">
                         <p>
-                            비즈니스 세계에서 실수는 용납되지 않습니다. 특히 바지에 실수는 당신이 여태 쌓아온 사회적 평판에 아주 치명적인 영향을 미칩니다.<br />
-                             지인들이 당신을 위한 연말 선물로 성인용 기저귀를 고려하게 만들지 마십시오. <br />
-                             지금 당장 PEECEMAKER를 통해 은밀하고 위대한 괄약근 해방작전을 설계해보십시오.
+                            즐거운 제주도 여행 속에서 예기치 못한 생리적 위기에 처했다면 잘 찾아오셨습니다. <br/>
+                            PEECEMAKER와 함께 당신을 위기에서 구원해줄 은밀하고 정밀한 작전을 계획해보십시오.
                         </p>
+                        <div className='grid md:grid-cols-3 gap-8 md:gap-12 mt-5 text-center justify-center'>
+                            <div className='w-60'><h1 className='font-extrabold text-[24px]'>MAP</h1> 지도와 GPS를 활용해 주변의 화장실 위치, 정보, 리뷰를 제공합니다.</div>
+                            <div className='w-60'><h1 className='font-extrabold text-[24px]'>CHART</h1>제주시 화장실 데이터에 대한 각종 통계 및 평점 순위를 차트와 그래프로 제공합니다.</div>
+                            <div className='w-60'><h1 className='font-extrabold text-[24px]'>COMMUNITY</h1>게시판을 통해 소통하거나 화장지를 급히 구하는 등의 활동을 할 수 있는 공간을 제공합니다.</div>
+                        </div>
                     </div>
                 </motion.div>
 

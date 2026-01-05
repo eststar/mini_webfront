@@ -21,7 +21,7 @@ export default function signinPage() {
     }
     setIsLoading(true);
     try {
-      const response = await fetch("/back/signin", {
+      const response = await fetch("/back/api/members/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
