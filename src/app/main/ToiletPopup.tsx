@@ -74,9 +74,9 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
         : "0.0";
     return (
         <motion.div
-            initial={{ opacity: 0, y: 100, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: 100, x: "-50%" }}
+            initial={{ opacity: 0, y: 0, x: "-50%", scale: 0 }}
+            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
+            exit={{ opacity: 0, y: 0, x: "-50%", scale: 0 }}
             onClick={(e) => e.stopPropagation()}
             className="absolute bottom-32 left-1/2 z-9999 w-[80%] h-[75%] overflow-y-auto bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] shadow-2xl scrollbar-hide"
 

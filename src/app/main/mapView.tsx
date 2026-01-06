@@ -140,7 +140,7 @@ export default function MapView() {
                                         setSelectedToilet(toilet);
                                     }}
                                 >
-                                    {(level <= 4) && (
+                                    {(level <= 5) && (
                                         <div className="relative flex flex-col items-center px-2 py-1.5 rounded-3xl bg-white/50 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.1)] border border-white/70 group-hover:border-orange-400/50 group-hover:shadow-orange-200/50 group-hover:scale-115 transition-all duration-300 z-20 mb-1">
                                             <span className="text-[14px] font-[1000] text-slate-900 tracking-tight mb-2 max-w-37 truncate">
                                                 {toilet.toiletNm}

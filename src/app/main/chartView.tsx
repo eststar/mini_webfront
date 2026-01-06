@@ -3,13 +3,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from "framer-motion";
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+    BarChart, Bar, XAxis, YAxis, ResponsiveContainer,
     PieChart, Pie, Cell, Legend, LabelList
 } from 'recharts';
-import { FaShieldAlt, FaWheelchair, FaBaby, FaLayerGroup } from "react-icons/fa";
+import { FaShieldAlt, FaWheelchair, FaToilet , FaLayerGroup } from "react-icons/fa";
 import { MdBabyChangingStation } from "react-icons/md";
 
-const COLORS = ['#f97316', '#1e293b', '#64748b', '#94a3b8'];
+
 interface Toilet {
     dataCd: string;
     toiletNm: string;
@@ -29,7 +29,7 @@ const RankItem = ({ item, index, type }: { item: any, index: number, type: 'top'
     >
         {/* 왼쪽 섹션: 등수 + 이름 */}
         <div className="flex items-center gap-3 min-w-0 flex-1">
-            <span className={`text-xl font-black shrink-0 w-8 ${type === 'top' ? 'text-emerald-500' : 'text-red-400'}`}>
+            <span className={`text-xl font-black shrink-0 w-8 ${type === 'top' ? 'text-emerald-400' : 'text-red-400'}`}>
                 {index + 1}
             </span>
             <div className="min-w-0 flex-1">
@@ -41,7 +41,7 @@ const RankItem = ({ item, index, type }: { item: any, index: number, type: 'top'
                 </p>
             </div>
         </div>
-        
+
         {/* 오른쪽 섹션: 평점 */}
         <div className={`flex items-center gap-1 bg-white px-3 py-1 rounded-xl shadow-sm border shrink-0 ml-2 ${type === 'top' ? 'border-emerald-100' : 'border-red-100'}`}>
             <span className={`text-xs ${type === 'top' ? 'text-emerald-500' : 'text-red-500'}`}>★</span>
@@ -141,9 +141,9 @@ export default function ChartView() {
 
                 const avgScore = parseFloat((stats.total / stats.count).toFixed(1));
 
-                
+
                 if (avgScore < 1.1) return null;
-                if (4.9 < avgScore ) return null
+                if (4.9 < avgScore) return null
 
                 return {
                     name: toilet.toiletNm,
@@ -171,23 +171,27 @@ export default function ChartView() {
             <div className="max-w-5xl mx-auto flex flex-col gap-12">
 
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {[
-                        { id: 'all', label: '전체 시설', icon: <FaLayerGroup />, count: totalStats?.all, color: ' border-4  border-slate-400/40' },
-                        { id: 'secure', label: '비상벨, CCTV 설치 시설', icon: <FaShieldAlt />, count: totalStats?.secure, color: ' border-4  border-emerald-500/40' },
-                        { id: 'accessible', label: '장애인 편의 시설', icon: <FaWheelchair />, count: totalStats?.accessible, color: ' border-4  border-blue-500/40' },
-                        { id: 'family', label: '유아 편의 시설', icon: <MdBabyChangingStation />, count: totalStats?.family, color: ' border-4 border-orange-500/50' },
+                        { id: 'all', label: '전체 시설', icon: <FaToilet />, count: totalStats?.all, color: 'ring-slate-400/50' },
+                        { id: 'secure', label: '비상벨, CCTV 설치 시설', icon: <FaShieldAlt />, count: totalStats?.secure, color: 'ring-emerald-500/50' },
+                        { id: 'accessible', label: '장애인 편의 시설', icon: <FaWheelchair />, count: totalStats?.accessible, color: 'ring-blue-500/50' },
+                        { id: 'family', label: '유아 편의 시설', icon: <MdBabyChangingStation />, count: totalStats?.family, color: 'ring-orange-500/50' },
                     ].map((btn) => (
                         <motion.button
                             key={btn.id}
-                            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => setFilterMode(btn.id as any)}
-                            className={`p-6 rounded-2xl border-2 backdrop-blur-md transition-all flex flex-col items-center gap-2 shadow-2xl
-                                ${filterMode === btn.id ? `${btn.color} bg-white/50 ring-4 ring-white/20` : 'border-transparent bg-white/20 opacity-60 hover:opacity-100'}`}
-                        >
-                            <span className="text-2xl mb-1">{btn.icon}</span>
-                            <span className="text-xs font-black uppercase tracking-widest text-slate-600">{btn.label}</span>
-                            <span className="text-3xl font-[1000] text-slate-900">{btn.count}</span>
+                            className={`p-6 rounded-2xl backdrop-blur-md transition-all flex flex-col items-center gap-2 shadow-xl border-none outline-none isolate transform-gpu 
+                                ${filterMode === btn.id
+                                    ? `bg-white/60 ring-4 ring-inset ${btn.color}`
+                                    : 'bg-white/20 opacity-60 hover:opacity-100'}`}>
+                            <span className="text-2xl mb-1 shrink-0">{btn.icon}</span>
+                            <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-600 text-center break-keep">
+                                {btn.label}
+                            </span>
+                            <span className="text-3xl font-[1000] text-slate-900 shrink-0">{btn.count}</span>
                         </motion.button>
                     ))}
                 </div>
@@ -200,9 +204,10 @@ export default function ChartView() {
                         <h3 className="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight">
                             지역별 분포
                         </h3>
+
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={emdStats}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff" />
+                                {/* <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff" /> */}
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0} tick={{ fill: '#1e293b' }} fontSize={12} />
                                 <YAxis hide />
                                 <Bar dataKey="value" fill="#f97316" radius={[10, 10, 0, 0]} barSize={40} isAnimationActive={true}>
@@ -214,6 +219,7 @@ export default function ChartView() {
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
+
                     </motion.div>
 
                     {/* 남녀 변기 비율 */}
@@ -221,6 +227,7 @@ export default function ChartView() {
                         <h3 className="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight">
                             남녀 수용력
                         </h3>
+
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie data={genderStats} innerRadius={80} outerRadius={110} paddingAngle={5} dataKey="value" isAnimationActive={true} animationEasing="ease-out" animationDuration={500}
@@ -241,23 +248,20 @@ export default function ChartView() {
                                                 {value}
                                             </text>
                                         );
-                                    }}
-
-                                >
+                                    }}>
                                     {genderStats.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.fill} />)}
-
                                 </Pie>
-
                                 <Legend verticalAlign="bottom" height={36} iconType="circle" />
                             </PieChart>
                         </ResponsiveContainer>
+
                     </motion.div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 col-span-1 md:col-span-2">
 
                         {/* TOP 5 */}
-                        <motion.div className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-2xl">
-                            <h3 className="text-2xl font-[1000] text-emerald-600 uppercase tracking-tighter mb-8">Top 5 Rated</h3>
+                        <motion.div layout className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-2xl">
+                            <h3 className="text-2xl font-[1000] text-emerald-500 uppercase tracking-tighter mb-8">Top 5 Rated</h3>
                             <div className="flex flex-col gap-4">
                                 {top5.map((item, index) => (
                                     <RankItem key={`top-${index}`} item={item} index={index} type="top" />
@@ -266,8 +270,8 @@ export default function ChartView() {
                         </motion.div>
 
                         {/* WORST 5 */}
-                        <motion.div className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-2xl">
-                            <h3 className="text-2xl font-[1000] text-red-600 uppercase tracking-tighter mb-8">Worst 5 Rated</h3>
+                        <motion.div layout className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-3xl shadow-2xl">
+                            <h3 className="text-2xl font-[1000] text-rose-500 uppercase tracking-tighter mb-8">Worst 5 Rated</h3>
                             <div className="flex flex-col gap-4">
                                 {worst5.map((item, index) => (
                                     <RankItem key={`worst-${index}`} item={item} index={index} type="worst" />
