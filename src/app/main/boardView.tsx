@@ -114,7 +114,7 @@ export default function BoardView() {
 
     return (
         <div className="w-full h-full flex items-center justify-center pt-24 pb-32 md:pt-32 md:pb-40 px-4 md:px-8 bg-transparent">
-            <div className="w-full max-w-5xl h-[75vh] md:h-187.5 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-4xl md:rounded-4xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden text-slate-900 relative">
+            <div className="w-full max-w-5xl h-[75vh] md:h-187.5 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-4xl md:rounded-4xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden text-slate-900 relative dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white">
                 <AnimatePresence mode="wait">
                     {viewMode === 'list' ? (
                         <motion.div
@@ -127,7 +127,7 @@ export default function BoardView() {
                             
                             <div 
                                 ref={scrollContainerRef}
-                                className="flex-1 overflow-y-auto custom-scrollbar bg-white/5 touch-pan-y overflow-x-hidden"
+                                className="flex-1 overflow-y-auto custom-scrollbar touch-pan-y overflow-x-hidden"
                             >
                                 <div className="flex flex-col">
                                     <AnimatePresence mode="popLayout">
@@ -136,7 +136,7 @@ export default function BoardView() {
                                                 key={post.id}
                                                 layout
                                                 onClick={() => handlePostClick(post)}
-                                                className="group flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 px-6 md:px-10 py-6 md:py-8 border-b border-white/20 hover:bg-white/40 transition-all cursor-pointer"
+                                                className="group flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 px-6 md:px-10 py-6 md:py-8 border-b border-white/20  transition-all cursor-pointer dark:bg-zinc-600/30 dark:border-zinc-400/10 "
                                             >
                                                 <div className="md:col-span-9 flex flex-col gap-1 md:gap-2">
                                                     <div className="flex items-center gap-2">
@@ -150,11 +150,11 @@ export default function BoardView() {
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-slate-600 font-bold text-[12px] md:text-sm line-clamp-1 opacity-70">{post.content}</p>
+                                                    <p className="text-slate-600 dark:text-slate-200 font-bold text-[12px] md:text-sm line-clamp-1 opacity-70">{post.content}</p>
                                                 </div>
                                                 <div className="md:col-span-3 flex items-center md:items-end md:justify-center justify-between mt-2 md:mt-0">
                                                     <div className="flex items-center gap-2">
-                                                        <FaUserCircle className="text-slate-700 text-xl" />
+                                                        <FaUserCircle className="text-slate-700 dark:text-orange-500 text-xl" />
                                                         <span className="font-black text-[11px] md:text-sm tracking-tight">{post.name}</span>
                                                     </div>
                                                 </div>
@@ -169,7 +169,7 @@ export default function BoardView() {
 
                             {/* 페이지네이션 */}
                             {totalPages > 0 && (
-                                <div className="flex justify-center items-center gap-1 md:gap-2 py-4 bg-white/20 border-t border-white/10">
+                                <div className="flex justify-center items-center gap-1 md:gap-2 py-4 bg-white/20 border-t border-white/10 dark:bg-zinc-600/30 dark:border-zinc-400/10">
                                     <button 
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage(1)}
@@ -195,7 +195,7 @@ export default function BoardView() {
                                                 className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-xl font-black text-xs md:text-sm transition-all ${
                                                     currentPage === pageNum 
                                                     ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30" 
-                                                    : "hover:bg-white/60 text-slate-600 bg-white/30"
+                                                    : "hover:bg-white/60 dark:bg-zinc-600/60 dark:text-white text-slate-600 bg-white/30 dark:hover:bg-zinc-500"
                                                 }`}
                                             >
                                                 {pageNum}
@@ -222,15 +222,15 @@ export default function BoardView() {
                                 </div>
                             )}
 
-                            <div className="px-6 md:px-10 py-4 border-t border-white/40 bg-white/30 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="px-6 md:px-10 py-4 border-t border-white/40 bg-white/30 flex flex-col md:flex-row items-center justify-between gap-4 dark:bg-zinc-600/30 dark:border-zinc-400/10">
                                 <div className="relative w-full md:w-72 group">
-                                    <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors" />
+                                    <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white group-focus-within:text-orange-500 transition-colors " />
                                     <input
                                         type="text"
                                         placeholder="SEARCH POSTS"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full bg-white/50 border border-white/60 rounded-2xl py-3 pl-12 pr-4 text-sm font-black focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all placeholder:text-slate-400"
+                                        className="w-full bg-white/50 border border-white/60 rounded-2xl py-3 pl-12 pr-4 text-sm font-black focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all placeholder:text-slate-400 dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white"
                                     />
                                 </div>
                                 <button

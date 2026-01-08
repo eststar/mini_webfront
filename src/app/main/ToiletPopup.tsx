@@ -29,13 +29,16 @@ interface Toilet {
 }
 
 interface Review {
-    id: number;
+    reviewId: number;
     user: string;
     rating: number;
-    text: string;
-    date: string;
-    data_cd: string;
-
+    content: string;
+    createDate : string;
+    member: {
+        memberId : string;
+        nickname : string;
+    }
+    point : number;
 }
 
 interface ToiletPopupProps {
@@ -50,16 +53,17 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
     const [rating, setRating] = useState(5);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [comment, setComment] = useState("");
+
     useEffect(() => {
         const fetchReviews = async () => {
             try {
 
-                const response = await fetch('/data/review.json');
-                const allReviews: Review[] = await response.json();
-
-
-                const filtered = allReviews.filter(rev => rev.data_cd === data.dataCd);
-                setReviews(filtered);
+                const response = await fetch(`/back/api/test/review/getreview?dataCd=${data.dataCd}`);
+                const review: Review[] = await response.json();
+                // const filtered = allReviews.filter(rev => rev.data_cd === data.dataCd);
+                 console.log(review)
+                setReviews(review);
+                
             } catch (err) {
                 console.error("리뷰 로드 실패: ", err);
             }
@@ -70,7 +74,7 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
 
 
     const averageRating = reviews.length > 0
-        ? (reviews.reduce((acc, rev) => acc + rev.rating, 0) / reviews.length).toFixed(1)
+        ? (reviews.reduce((acc, rev) => acc + rev.point, 0) / reviews.length).toFixed(1)
         : "0.0";
     return (
         <motion.div
@@ -78,7 +82,7 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
             animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
             exit={{ opacity: 0, y: 0, x: "-50%", scale: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="absolute bottom-32 left-1/2 z-9999 w-[80%] h-[75%] overflow-y-auto bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] shadow-2xl scrollbar-hide"
+            className="absolute bottom-32 left-1/2 z-9999 w-[80%] h-[75%] overflow-y-auto bg-white/40 backdrop-blur-2xl border border-white/50 rounded-[2.5rem] shadow-2xl scrollbar-hide dark:bg-zinc-600/30 dark:border-zinc-400/10"
 
         >
             {/* 닫기 버튼 */}
@@ -160,26 +164,26 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
                 </div>
                 <div className="flex flex-col  mt-5">
                     <span className="text-4xl font-black text-orange-500 uppercase">Address</span>
-                    <p className="text-slate-800 font-bold text-xl leading-tight">
+                    <p className="text-slate-700 dark:text-white font-bold text-xl leading-tight">
                         {data.rnAdres || data.lnmAdres || "주소 정보 없음"}
                     </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4 mt-5">
-                    <div className="flex flex-col">
-                        <span className="text-4xl font-black text-slate-700 uppercase ">Opening</span>
-                        <p className="text-xl font-extrabold text-slate-700 ">{data.opnTimeInfo || "정보없음"}</p>
+                    <div className="flex flex-col text-slate-700 dark:text-white">
+                        <span className="text-4xl font-black uppercase text-orange-500 ">Opening</span>
+                        <p className="text-xl font-extrabold  ">{data.opnTimeInfo || "정보없음"}</p>
                     </div>
 
-                    <div className="flex flex-col border-white/20 ">
-                        <span className="text-4xl font-black text-slate-700 uppercase ">Contact</span>
-                        <p className="text-2xl font-extrabold text-slate-700">{data.telno || "번호없음"}</p>
+                    <div className="flex flex-col border-white/20 text-slate-700 dark:text-white">
+                        <span className="text-4xl font-black uppercase text-orange-500 ">Contact</span>
+                        <p className="text-2xl font-extrabold ">{data.telno || "번호없음"}</p>
                     </div>
                 </div>
                 {data.etcCn && (
-                    <div className="flex flex-col">
-                        <span className="text-4xl font-black text-slate-700 uppercase">ETC</span>
-                        <p className="text-xl font-extrabold text-slate-700">{data.etcCn}</p>
+                    <div className="flex flex-col text-slate-700 dark:text-white ">
+                        <span className="text-4xl font-black uppercase  text-orange-500">ETC</span>
+                        <p className="text-xl font-extrabold ">{data.etcCn}</p>
                     </div>
                 )}
 
@@ -188,7 +192,7 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
                 {/* 리뷰 */}
                 <div className="mt-4 border-t border-white/20 pt-2 pb-10">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-                        <h3 className="text-3xl md:text-4xl font-[1000] text-slate-700 uppercase ">
+                        <h3 className="text-3xl md:text-4xl font-[1000] text-slate-700 dark:text-white uppercase ">
                             Review
                         </h3>
                         <div className="flex gap-1  p-2 self-start sm:self-auto">
@@ -216,14 +220,14 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                             placeholder="리뷰 작성"
-                            className="w-full bg-white/50 backdrop-blur-md border-2 border-white/50 rounded-4xl px-6 py-5 pr-20 font-bold text-slate-800 outline-none focus:border-orange-500/50 focus:bg-white/50 transition-all resize-none"
+                            className="w-full bg-white/50 backdrop-blur-md border-2 border-white/50 rounded-4xl px-6 py-5 pr-20 font-bold text-slate-800 outline-none focus:border-orange-500/50 focus:bg-white/50 transition-all resize-none dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white focus:dark:bg-zinc-800/50"
                         />
                         <button
                             onClick={() => {
                                 console.log("리뷰 제출:", { rating, comment, toiletCd: data.dataCd });
                                 setComment("");
                             }}
-                            className="absolute right-4 bottom-4 px-6 py-3 bg-orange-500 text-white rounded-2xl font-black text-sm hover:bg-orange-600 hover:scale-105 active:scale-95 transition-all shadow-lg"
+                            className="absolute right-4 bottom-4 px-6 py-3 bg-orange-500 text-white rounded-2xl font-black text-sm hover:bg-orange-600 hover:scale-105 active:scale-95 transition-all shadow-lg "
                         >
                             POST
                         </button>
@@ -232,25 +236,25 @@ export default function ToiletPopup({ data, myPos, onClose }: ToiletPopupProps) 
                     {/* 리뷰목록 */}
                     <div className="space-y-4 mt-5">
                         {reviews.length > 0 ? (reviews.map((rev) => (
-                            <div key={rev.id} className="bg-white/40 backdrop-blur-md p-5 rounded-4xl border border-white/70 ">
-                                <div className="flex justify-between items-center mb-2">
+                            <div key={rev.reviewId} className="bg-white/40 backdrop-blur-md p-5 rounded-4xl border border-white/70 dark:bg-zinc-600/30 dark:border-zinc-400/10 ">
+                                <div className="flex justify-between items-center mb-2 ">
 
-                                    <span className="font-black text-slate-800 flex flex-row">
-                                        <div className="w-5 h-5 md:w-6 md:h-6 mr-1 rounded-full text-slate-700 flex items-center justify-center text-5xl overflow-hidden">
-                                        <FaUserCircle />
-                                    </div>{rev.user}</span>
+                                    <span className="font-black text-slate-800 dark:text-white flex flex-row">
+                                        <div className="w-5 h-5 md:w-6 md:h-6 mr-1 rounded-full text-slate-700 dark:text-orange-500 flex items-center justify-center text-5xl overflow-hidden">
+                                            <FaUserCircle />
+                                        </div>{rev.member.nickname}</span>
                                     <div className="flex text-orange-500">
-                                        {[...Array(rev.rating)].map((_, i) => (
+                                        {[...Array(rev.point)].map((_, i) => (
                                             <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                                                 <path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clipRule="evenodd" />
                                             </svg>
                                         ))}
                                     </div>
                                 </div>
-                                <p className="text-slate-700 font-bold leading-relaxed">{rev.text}</p>
-                                <span className="text-[10px] text-slate-400 mt-2 block font-black uppercase tracking-tighter">{rev.date}</span>
+                                <p className="text-slate-700 dark:text-zinc-200 font-bold leading-relaxed">{rev.content}</p>
+                                <span className="text-[10px] text-slate-400 mt-2 block font-black uppercase tracking-tighter">{rev.createDate}</span>
                             </div>
-                        ))) : (<div className="text-center py-10 text-slate-400 font-bold">아직 리뷰가 없어요... 첫 리뷰를 남겨보세요!</div>)}
+                        ))) : (<div className="text-center py-10 text-slate-500 font-bold">아직 리뷰가 없어요... 첫 리뷰를 남겨보세요!</div>)}
 
                     </div>
                 </div>

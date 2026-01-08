@@ -18,18 +18,18 @@ export default function BoardWrite({ onBack }: WriteProps) {
             className="flex flex-col h-full p-8 md:p-12"
         >
             <div className="flex items-center gap-4 mb-8">
-                <button onClick={onBack} className="p-3 bg-white/50 rounded-full hover:bg-white transition-colors">
-                    <FaArrowLeft className="text-slate-700" />
+                <button onClick={onBack} className="p-3 bg-white/50 rounded-full hover:bg-white dark:hover:bg-zinc-800 transition-colors dark:bg-zinc-600/30 dark:border-zinc-400/10  ">
+                    <FaArrowLeft className="text-slate-700 dark:text-white" />
                 </button>
-                <h2 className="text-3xl md:text-4xl font-[1000] text-slate-800 tracking-tighter uppercase">New Post</h2>
+                <h2 className="text-3xl md:text-4xl font-[1000] text-slate-800 dark:text-white tracking-tighter uppercase">New Post</h2>
             </div>
 
             <div className="flex-1 flex flex-col gap-6">
-                <input className="w-full bg-white/60 border border-white/80 p-6 rounded-3xl text-xl font-bold outline-none focus:ring-4 focus:ring-orange-500/20 transition-all shadow-inner" placeholder="제목" />
-                <textarea className="w-full flex-1 bg-white/60 border border-white/80 p-6 rounded-4xl text-lg font-bold outline-none focus:ring-4 focus:ring-orange-500/20 transition-all resize-none shadow-inner scrollbar-hide" placeholder="내용" />
+                <input className="w-full bg-white/60 border border-white/80 p-6 rounded-3xl text-xl font-bold outline-none focus:ring-4 focus:ring-orange-500/20 transition-all shadow-inner dark:bg-zinc-600/30 dark:border-zinc-400/10" placeholder="제목" />
+                <textarea className="w-full flex-1 bg-white/60 border border-white/80 p-6 rounded-4xl text-lg font-bold outline-none focus:ring-4 focus:ring-orange-500/20 transition-all resize-none shadow-inner scrollbar-hide dark:bg-zinc-600/30 dark:border-zinc-400/10" placeholder="내용" />
 
                 <div className="flex gap-4">
-                    <button onClick={onBack} className="flex-1 p-4 bg-slate-200/80 text-slate-600 rounded-3xl font-black text-lg hover:bg-slate-300 transition-all">취소</button>
+                    <button onClick={onBack} className="flex-1 p-4 bg-slate-200/80 text-slate-600 rounded-3xl font-black text-lg hover:bg-slate-300 transition-all dark:bg-zinc-400/30 dark:border-zinc-400/10 dark:text-white dark:hover:text-slate-800">취소</button>
                     <button className="flex-2 p-4 bg-orange-500 text-white rounded-3xl font-black text-xl shadow-xl shadow-orange-500/30 hover:bg-orange-600 active:scale-95 transition-all">등록하기</button>
                 </div>
             </div>

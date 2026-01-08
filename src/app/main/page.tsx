@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { FaMapMarkerAlt, FaList, FaClipboardList, FaChartPie } from "react-icons/fa";
-
+import { useTheme } from "next-themes";
 import MapView from "./mapView";
-import ListView from "./listView";
 import BoardView from "./boardView"
 import ChartView from "./chartView";
+import { IoMdSettings } from "react-icons/io";
+import { MdComputer, MdDarkMode, MdLightMode } from "react-icons/md";
 
 interface UserData {
     nickname?: string;
@@ -24,9 +25,11 @@ export default function MainPage() {
     const [isClient, setIsClient] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userData, setUserData] = useState<any>({});
-
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const {theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
     useEffect(() => {
-
+        setMounted(true);
         setIsClient(true);
         const saved = localStorage.getItem("activeTab");
         if (saved) {
@@ -62,6 +65,7 @@ export default function MainPage() {
 
     }, []);
 
+    
 
     useEffect(() => {
         if (isClient) {
@@ -69,10 +73,21 @@ export default function MainPage() {
         }
     }, [activeTab, isClient]);
 
+
+    if (!mounted) {
+        return null; 
+    }
+
     const menuItems = [
         { icon: <FaMapMarkerAlt />, id: 0 },
         { icon: <FaChartPie />, id: 1 },
         { icon: <FaClipboardList />, id: 2 },
+    ];
+
+    const themeItems = [
+        { icon: <MdComputer />, value: 'system' },
+        { icon: <MdLightMode />, value: 'light' },
+        { icon: <MdDarkMode />, value: 'dark' },
     ];
 
     const renderContent = () => {
@@ -99,8 +114,10 @@ export default function MainPage() {
     };
 
     return (
-        <main className="relative w-screen h-screen overflow-hidden inset-0 z-0 bg-gradient-to-tr from-[#e1fbff] via-[#ffe9c5] to-[#e0f5ff] text-black font-sans selection:bg-orange-100">
-
+        <main className="relative w-screen h-screen overflow-hidden inset-0 z-0 bg-linear-to-tr from-[#e1fbff] via-[#ffe9c5] to-[#e0f5ff] text-black font-sans selection:bg-orange-100 dark:text-white">
+            {theme === 'dark' && (
+                <div className="absolute inset-0 z-10 pointer-events-none bg-zinc-950/80 mix-blend-multiply" />
+            )}
             <motion.nav
                 initial={{ y: -120, opacity: 1 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -108,33 +125,98 @@ export default function MainPage() {
             >
                 <div className="flex gap-2 md:gap-4 pointer-events-auto">
                     <div onClick={() => router.push('/')}
-                        className="group relative flex items-center gap-2 px-5 py-3 md:px-8 md:py-5 bg-white/30 backdrop-blur-2xl border border-white/50 rounded-full md:rounded-[40px] shadow-2xl cursor-pointer transition-all duration-300 active:scale-95">
+                        className="group relative flex items-center gap-2 px-5 py-3 md:px-8 md:py-5 bg-white/30 backdrop-blur-2xl border border-white/50 rounded-full md:rounded-[40px] shadow-2xl cursor-pointer transition-all duration-300 active:scale-95 dark:bg-zinc-600/40 dark:border-zinc-400/10">
                         <h1 className="text-lg md:text-3xl font-[1000] tracking-widest uppercase leading-none group-hover:scale-105">
                             <span className="text-orange-500">PEECE</span>
-                            <span className="ml-1 text-slate-700">MAKER</span>
+                            <span className="ml-1 text-slate-700 dark:text-white">MAKER</span>
                         </h1>
                     </div>
                 </div>
-                <button
-                    onClick={handleAuth}
-                    className="group relative pointer-events-auto px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] text-xs md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600/85 active:scale-90 transition-all cursor-pointer overflow-hidden"
-                    key={isLoggedIn ? "logout-btn" : "login-btn"}
-                >
-                    {isLoggedIn ? (
-                        <>
-                            
-                            <span className="inline-block group-hover:opacity-0 transition-opacity duration-200">
-                                {userData?.nickname}
-                            </span>
-                          
-                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                LOG OUT
-                            </span>
-                        </>
-                    ) : (
-                        "LOG IN"
-                    )}
-                </button>
+
+                <div className="relative pointer-events-auto flex flex-col items-end">
+
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="group relative px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600/85 active:scale-95 transition-all cursor-pointer overflow-hidden flex flex-row justify-center items-center"
+                    >
+
+                        {isLoggedIn && <p className="mr-3 text-2xl">{userData?.username}</p>}
+                        <IoMdSettings className="text-3xl" />
+
+                    </button>
+
+
+                    <AnimatePresence>
+                        {isMenuOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -15, scale: 1 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -15, scale: 1 }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                className="absolute top-[calc(100%+12px)] right-0 w-64 md:w-72 bg-white/20 backdrop-blur-2xl border border-white/50 rounded-3xl md:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden z-50 p-6 space-y-5 dark:bg-zinc-600/40 dark:border-zinc-400/10"
+                            >
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">Appearance</p>
+                                    <div className="flex items-center p-1  backdrop-blur-md border border-black/5 rounded-2xl relative">
+                                        {themeItems.map((item) => (
+                                            <button
+                                                key={item.value}
+                                                onClick={() => setTheme(item.value)}
+                                                className="relative flex-1 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center cursor-pointer z-20"
+                                            >
+                                                <span className={`text-xl transition-all duration-300 z-40 ${mounted && theme === item.value
+                                                    ? 'text-white'
+                                                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'
+                                                    }`}>
+                                                    {item.icon}
+                                                </span>
+
+
+                                                {mounted && theme === item.value && (
+                                                    <motion.div
+                                                        layoutId="theme-pill"
+                                                        className="absolute inset-0 bg-orange-500 rounded-xl z-10 shadow-lg"
+                                                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                                    />
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-slate-200/50 " />
+
+                                {/* 섹션 2: 회원 메뉴 (기존 코드 유지하되 여백 조정) */}
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">Account</p>
+                                    {isLoggedIn ? (
+                                        <div className="flex flex-col gap-1">
+                                            <button
+                                                onClick={() => { setIsMenuOpen(false); router.push('/changeinfo'); }}
+                                                className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-600 rounded-xl transition-all"
+                                            >
+                                                회원 정보 변경
+                                            </button>
+                                            <button
+                                                onClick={handleAuth}
+                                                className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-600 rounded-xl transition-all"
+                                            >
+                                                로그아웃
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => { setIsMenuOpen(false); router.push('/login'); }}
+                                            className="w-full mt-2 py-4 bg-orange-500 text-white rounded-2xl text-[11px] font-black tracking-widest uppercase hover:bg-orange-600 transition-all shadow-lg active:scale-95"
+                                        >
+                                            로그인
+                                        </button>
+                                    )}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </motion.nav>
 
 
@@ -158,14 +240,14 @@ export default function MainPage() {
                 animate={{ y: 0, opacity: 1 }}
                 className="absolute bottom-6 left-0 right-0 z-30 flex justify-center pointer-events-none"
             >
-                <div className="flex items-center p-1.5 bg-white/20 backdrop-blur-2xl border border-white/60 rounded-[30px] md:rounded-[40px] shadow-2xl pointer-events-auto relative">
+                <div className="flex items-center p-1.5 bg-white/20 backdrop-blur-2xl border border-white/60 rounded-[30px] md:rounded-[40px] shadow-2xl pointer-events-auto relative dark:bg-zinc-600/40 dark:border-zinc-400/10">
                     {menuItems.map((item) => (
                         <button
                             key={item.id}
                             onClick={() => setActiveTab(item.id)}
                             className={`relative px-7 py-4 md:px-10 md:py-5 rounded-[25px] md:rounded-[35px] transition-colors duration-300 flex items-center justify-center cursor-pointer ${activeTab === item.id ? 'text-white' : 'text-slate-700 hover:text-black'}`}
                         >
-                            <span className={`text-2xl md:text-3xl relative z-30 transition-all duration-300 active:scale-75 ${activeTab === item.id ? 'text-white' : 'text-slate-700'}`}>
+                            <span className={`text-2xl md:text-3xl relative z-30 transition-all duration-300 active:scale-75 ${activeTab === item.id ? 'text-white' : 'text-zinc-500'}`}>
                                 {item.icon}
                             </span>
                             {activeTab === item.id && (
