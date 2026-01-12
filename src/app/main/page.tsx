@@ -17,6 +17,11 @@ interface UserData {
     username?: string;
 }
 
+const jejuPos = {
+    lat: 33.497,
+    lng: 126.537
+};
+
 export default function MainPage() {
     const router = useRouter();
 
@@ -26,19 +31,34 @@ export default function MainPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userData, setUserData] = useState<any>({});
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const {theme, setTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+
+    const [isRealLocation, setIsRealLocation] = useState(() => {
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("isRealLocation");
+            return saved === "true";
+        }
+        return false;
+    });
+
+    const [currentPos, setCurrentPos] = useState(jejuPos);
     useEffect(() => {
         setMounted(true);
         setIsClient(true);
+
         const saved = localStorage.getItem("activeTab");
         if (saved) {
             setActiveTab(parseInt(saved));
         }
 
+        const savedLocation = localStorage.getItem("isRealLocation");
+        if (savedLocation !== null) {
+            setIsRealLocation(savedLocation === "true");
+        }
+
         const checkAuth = async () => {
             try {
-
                 const res = await fetch("/back/api/members/myinfo", {
                     method: "GET",
 
@@ -60,22 +80,46 @@ export default function MainPage() {
                 setIsLoggedIn(false);
             }
         };
-
         checkAuth();
-
     }, []);
 
-    
+
 
     useEffect(() => {
         if (isClient) {
             localStorage.setItem("activeTab", activeTab.toString());
+            localStorage.setItem("isRealLocation", isRealLocation.toString());
         }
-    }, [activeTab, isClient]);
+    }, [activeTab, isClient, isRealLocation]);
+
+    useEffect(() => {
+        if (isRealLocation) {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const newPos = {
+                            lat: pos.coords.latitude,
+                            lng: pos.coords.longitude
+                        };
+                        setCurrentPos(newPos);
+                    },
+                    (error) => {
+                        console.error("GPS error", error);
+                        setIsRealLocation(false);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+                );
+            }
+        } else {
+            setCurrentPos({ ...jejuPos });
+        }
+    }, [isRealLocation]);
+
+
 
 
     if (!mounted) {
-        return null; 
+        return null;
     }
 
     const menuItems = [
@@ -91,12 +135,12 @@ export default function MainPage() {
     ];
 
     const renderContent = () => {
-        if (!isClient) return <MapView />;
+        if (!isClient) return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData} />;
         switch (activeTab) {
-            case 0: return <MapView />;
+            case 0: return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData}/>;
             case 1: return <ChartView />;
             case 2: return <BoardView />;
-            default: return <MapView />;
+            default: return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData}/>;
         }
     };
 
@@ -140,7 +184,7 @@ export default function MainPage() {
                         className="group relative px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600/85 active:scale-95 transition-all cursor-pointer overflow-hidden flex flex-row justify-center items-center"
                     >
 
-                        {isLoggedIn && <p className="mr-3 text-2xl">{userData?.username}</p>}
+                        {isLoggedIn && <p className="mr-3 text-2xl">{userData?.nickname}</p>}
                         <IoMdSettings className="text-3xl" />
 
                     </button>
@@ -184,9 +228,49 @@ export default function MainPage() {
                                     </div>
                                 </div>
 
-                                <div className="h-px bg-slate-200/50 " />
+                                <div className="h-px bg-slate-400/50 dark:bg-white/30" />
 
-                                {/* 섹션 2: 회원 메뉴 (기존 코드 유지하되 여백 조정) */}
+                                {/* 섹션 2 GPS 토글 */}
+                                <AnimatePresence>
+                                    {activeTab === 0 && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden"
+                                        >
+
+                                            <div className="space-y-3">
+                                                <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">
+                                                    GPS Settings
+                                                </p>
+                                                <div className="flex items-center justify-between px-4 py-4 transition-all">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-bold text-slate-700 dark:text-white/90">
+                                                            {isRealLocation ? "현 위치" : "제주도"}
+                                                        </span>
+                                                    </div>
+                                                    <div
+                                                        onClick={() => setIsRealLocation(!isRealLocation)}
+                                                        className={`relative w-14 h-7 rounded-full cursor-pointer transition-all duration-500 flex items-center px-1.5 ${isRealLocation ? 'bg-orange-500 ' : 'bg-slate-400 dark:bg-zinc-700'
+                                                            }`}
+                                                    >
+                                                        <motion.div
+                                                            animate={{ x: isRealLocation ? 24 : 0 }}
+                                                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                                            className="w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="h-px bg-slate-400/50 dark:bg-white/30" />
+                                        </motion.div>
+                                    )}
+
+                                </AnimatePresence>
+
+
+                                {/* 섹션 3: 회원 메뉴  */}
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">Account</p>
                                     {isLoggedIn ? (
@@ -213,6 +297,20 @@ export default function MainPage() {
                                         </button>
                                     )}
                                 </div>
+
+                                <div className="h-px bg-slate-400/50 dark:bg-white/30" />
+                                <div className="space-y-1">
+                                    <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">About</p>
+                                    <button
+                                        onClick={() => { setIsMenuOpen(false); router.push('/about'); }}
+                                        className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-600 rounded-xl transition-all"
+                                    >
+                                        About Page
+                                    </button>
+
+                                </div>
+
+
                             </motion.div>
                         )}
                     </AnimatePresence>

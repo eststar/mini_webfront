@@ -28,9 +28,13 @@ interface Toilet {
 
 let cachedToilets: Toilet[] = [];
 
+interface MapViewProps {
+    isRealLocation: boolean;
+    Pos: { lat: number; lng: number };
+    userData?: any;
+}
 
-
-export default function MapView() {
+export default function MapView({ Pos,  userData }: MapViewProps) {
     const [loading] = useKakaoLoader({
         appkey: process.env.NEXT_PUBLIC_KAKAO_MAP_KEY as string,
         libraries: ["services", "clusterer"],
@@ -40,12 +44,8 @@ export default function MapView() {
     const [level, setLevel] = useState(3);
     const [map, setMap] = useState<kakao.maps.Map | null>(null);
     const { theme } = useTheme();
-    const [myPos, setMyPos] = useState<{ lat: number; lng: number }>({
-        lat: 33.497,
-        lng: 126.537
-    });
-    const [selectedToilet, setSelectedToilet] = useState<Toilet | null>(null);
 
+    const [selectedToilet, setSelectedToilet] = useState<Toilet | null>(null);
 
     const Spinner = () => (
         <motion.div
@@ -54,6 +54,14 @@ export default function MapView() {
             className="w-7 h-7 mx-auto border-4 border-white/10 border-t-orange-500 border-l-orange-500 rounded-full flex justify-center items-center"
         />
     );
+
+    useEffect(() => {
+        if (map && Pos) {
+            const moveLatLng = new kakao.maps.LatLng(Pos.lat, Pos.lng);
+            map.setCenter(moveLatLng);
+        }
+    }, [Pos, map]);
+
 
     useEffect(() => {
         if (cachedToilets.length > 0) return;
@@ -73,16 +81,20 @@ export default function MapView() {
         fetchToilets();
     }, []);
 
+
+
+
     if (loading) return (
         <div className="flex h-full items-center justify-center font-black text-orange-500 animate-pulse text-2xl tracking-widest bg-white/10 backdrop-blur-md">
             <Spinner />
         </div>
     );
 
+
     return (
         <div className="w-full h-full relative">
             <Map
-                center={myPos}
+                center={Pos}
                 style={{ width: "100%", height: "100%", filter: theme === 'dark' ? 'invert(100%) hue-rotate(180deg)' : 'none' }}
                 level={3}
                 onCreate={(map) => {
@@ -95,9 +107,9 @@ export default function MapView() {
 
                 onZoomChanged={(map) => setLevel(map.getLevel())}
                 onClick={() => setSelectedToilet(null)}>
-                    
+
                 {/* 자기 위치 */}
-                <CustomOverlayMap position={myPos} zIndex={100}>
+                <CustomOverlayMap position={Pos} zIndex={100}>
                     <div className="relative flex items-center justify-center ">
                         <div className="absolute w-10 h-10 bg-stone-700/30 rounded-full animate-ping" />
                         <div className="relative w-6 h-6 bg-stone-700/95 backdrop-blur-2xl rounded-full border border-white shadow-lg flex justify-center items-center">
@@ -192,8 +204,8 @@ export default function MapView() {
                     <ToiletPopup
                         data={selectedToilet}
                         onClose={() => setSelectedToilet(null)}
-                        myPos={myPos}
-
+                        myPos={Pos}
+                        User={userData}
                     />
                 )}
             </AnimatePresence>
@@ -202,7 +214,7 @@ export default function MapView() {
                 <button
                     onClick={() => {
                         if (!map) return;
-                        const pos = new kakao.maps.LatLng(myPos.lat, myPos.lng);
+                        const pos = new kakao.maps.LatLng(Pos.lat, Pos.lng);
                         if (map.getLevel() > 6) {
                             map.setLevel(3);
                         }

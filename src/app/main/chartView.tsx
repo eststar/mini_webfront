@@ -128,23 +128,36 @@ export default function ChartView() {
         ];
     }, [filteredData]);
 
+    const filteredIds = useMemo(() => {
+        if (!filteredData.length) return new Set();
+        return new Set(filteredData.map(t => String(t.toiletNm)));
+    }, [filteredData]);
+
     const top5 = useMemo(() => {
-     
-        return reviewRank.slice(0, 5).map(item => ({
-            name: item.toiletNm,
-            score: item.point.toFixed(1),
-            reviewCount: item.reviewCnt
-        }));
-    }, [reviewRank]);
+        if (!reviewRank.length || filteredIds.size === 0) return [];
+
+        return reviewRank
+            .filter(item => filteredIds.has(String(item.toiletNm)))
+            .slice(0, 5)
+            .map(item => ({
+                name: item.toiletNm,
+                score: item.point.toFixed(1),
+                reviewCount: item.reviewCnt
+            }));
+    }, [reviewRank, filteredIds]);
 
     const worst5 = useMemo(() => {
-        
-        return reviewRank.slice(-5).reverse().map(item => ({
-            name: item.toiletNm,
-            score: item.point.toFixed(1),
-            reviewCount: item.reviewCnt
-        }));
-    }, [reviewRank]);
+        if (!reviewRank.length || filteredIds.size === 0) return [];
+
+        return reviewRank
+            .filter(item => filteredIds.has(String(item.toiletNm))).sort((a, b) => Number(a.point) - Number(b.point))
+            .slice(0, 5)
+            .map(item => ({
+                name: item.toiletNm,
+                score: item.point.toFixed(1),
+                reviewCount: item.reviewCnt
+            }));
+    }, [reviewRank, filteredIds]);
 
     return (
         <div className="w-full h-full relative overflow-y-auto pb-40 pt-32 px-4 md:px-8 custom-scrollbar bg-transparent text-slate-800 dark:text-white">

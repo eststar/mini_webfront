@@ -63,6 +63,10 @@ def main():
             new_content = f"{prefix}{original_content}{extension}"
             item['content'] = new_content
         
+        # Update member_id
+        if 'member_id' in item:
+            item['member_id'] = item['member_id'].replace('LOCAL_member', 'LOCAL_user') + '@example.com'
+
         # Remove data_cd
         if 'data_cd' in item:
             del item['data_cd']

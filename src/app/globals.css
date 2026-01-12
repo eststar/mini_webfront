@@ -9,12 +9,12 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* 라이트 모드일 때 브라우저 기본 배경을 흰색으로 고정 */
+  
   color-scheme: light; 
 }
 
 .dark {
-  /* 다크 모드일 때만 브라우저 기본 배경을 검은색으로 */
+
   color-scheme: dark;
 }
 

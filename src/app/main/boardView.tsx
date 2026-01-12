@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from 'react'; // useRef 추가
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEdit, FaUserCircle, FaSearch, FaChevronLeft, FaChevronRight, FaRegCommentDots } from "react-icons/fa";
 import memberData from '@/assets/member.json';
@@ -21,31 +21,32 @@ export default function BoardView() {
     const [board, setBoard] = useState<Board[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isReady, setIsReady] = useState(false);
-    const [viewMode, setViewMode] = useState<'list' | 'write' | 'detail'>('list');
+    const [viewMode, setViewMode] = useState<'list' | 'write' | 'detail' | 'edit'>('list');
     const [selectedPost, setSelectedPost] = useState<Board | null>(null);
 
     const [currentPage, setCurrentPage] = useState(1);
     const POSTS_PER_PAGE = 8; 
 
- 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        Promise.all([
-            fetch("/data/board.json").then((res) => res.json()),
-            fetch("/data/comment.json").then((res) => res.json())
-        ])
-        .then(([boardData, commentData]) => {
-            if (boardData && commentData) {
+    // --- 1. 데이터 로딩 로직을 함수로 분리 (재사용성 확보) ---
+    const fetchBoardData = useCallback(async () => {
+        try {
+            const [boardRes, commentRes] = await Promise.all([
+                fetch("/data/board.json").then(res => res.json()),
+                fetch("/data/comment.json").then(res => res.json())
+            ]);
+
+            if (boardRes && commentRes) {
                 const memberMap = new Map(memberData.map((m: any) => [m.member_id, m.nickname]));
-                const commentCountMap = commentData.reduce((acc: Record<number, number>, comment: any) => {
+                const commentCountMap = commentRes.reduce((acc: Record<number, number>, comment: any) => {
                     acc[comment.board_id] = (acc[comment.board_id] || 0) + 1;
                     return acc;
                 }, {});
 
-                const formattedData = boardData.map((item: any) => ({
+                const formattedData = boardRes.map((item: any) => ({
                     id: item.board_id,
-                    name: memberMap.get(item.member_id),
+                    name: memberMap.get(item.member_id) || "Unknown",
                     title: item.title,
                     content: item.content,
                     member_id: item.member_id,
@@ -56,24 +57,25 @@ export default function BoardView() {
                 const sortedData = formattedData.sort((a: Board, b: Board) => b.id - a.id);
                 setBoard(sortedData);
             }
-            setIsReady(true);
-        })
-        .catch((err) => {
+        } catch (err) {
             console.error("데이터 로딩 에러:", err);
+        } finally {
             setIsReady(true);
-        });
+        }
     }, []);
+
+    useEffect(() => {
+        fetchBoardData();
+    }, [fetchBoardData]);
 
    
     useEffect(() => {
         if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTo({
-                top: 0,
-                behavior: 'auto'
-            });
+            scrollContainerRef.current.scrollTo({ top: 0, behavior: 'auto' });
         }
     }, [currentPage]);
 
+    // 검색 
     const filteredBoard = useMemo(() => {
         return board.filter(post =>
             post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -96,12 +98,10 @@ export default function BoardView() {
         const maxButtons = 5;
         let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
         let endPage = startPage + maxButtons - 1;
-
         if (endPage > totalPages) {
             endPage = totalPages;
             startPage = Math.max(1, endPage - maxButtons + 1);
         }
-
         return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     };
 
@@ -114,21 +114,17 @@ export default function BoardView() {
 
     return (
         <div className="w-full h-full flex items-center justify-center pt-24 pb-32 md:pt-32 md:pb-40 px-4 md:px-8 bg-transparent">
-            <div className="w-full max-w-5xl h-[75vh] md:h-187.5 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-4xl md:rounded-4xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden text-slate-900 relative dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white">
+            <div className="w-full max-w-5xl h-[75vh] md:h-187.5 bg-white/40 backdrop-blur-2xl border border-white/60 rounded-4xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden text-slate-900 relative dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white">
                 <AnimatePresence mode="wait">
                     {viewMode === 'list' ? (
                         <motion.div
                             key="list"
-                            initial={{ opacity: 0}}
+                            initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             className="flex flex-col h-full"
                         >
-                            
-                            <div 
-                                ref={scrollContainerRef}
-                                className="flex-1 overflow-y-auto custom-scrollbar touch-pan-y overflow-x-hidden"
-                            >
+                            <div ref={scrollContainerRef} className="flex-1 overflow-y-auto custom-scrollbar touch-pan-y overflow-x-hidden">
                                 <div className="flex flex-col">
                                     <AnimatePresence mode="popLayout">
                                         {currentPosts.map((post) => (
@@ -136,7 +132,7 @@ export default function BoardView() {
                                                 key={post.id}
                                                 layout
                                                 onClick={() => handlePostClick(post)}
-                                                className="group flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 px-6 md:px-10 py-6 md:py-8 border-b border-white/20  transition-all cursor-pointer dark:bg-zinc-600/30 dark:border-zinc-400/10 "
+                                                className="group flex flex-col md:grid md:grid-cols-12 gap-2 md:gap-4 px-6 md:px-10 py-6 md:py-8 border-b border-white/20 transition-all cursor-pointer dark:bg-zinc-600/30 dark:border-zinc-400/10"
                                             >
                                                 <div className="md:col-span-9 flex flex-col gap-1 md:gap-2">
                                                     <div className="flex items-center gap-2">
@@ -170,82 +166,54 @@ export default function BoardView() {
                             {/* 페이지네이션 */}
                             {totalPages > 0 && (
                                 <div className="flex justify-center items-center gap-1 md:gap-2 py-4 bg-white/20 border-t border-white/10 dark:bg-zinc-600/30 dark:border-zinc-400/10">
-                                    <button 
-                                        disabled={currentPage === 1}
-                                        onClick={() => setCurrentPage(1)}
-                                        className="w-8 h-8 flex items-center justify-center disabled:opacity-10 hover:text-orange-500 transition-colors  md:flex"
-                                    >
-                                        <div className="flex items-center -space-x-1">
-                                            <FaChevronLeft size={10} /><FaChevronLeft size={10} />
-                                        </div>
-                                    </button>
-                                    <button 
-                                        disabled={currentPage === 1}
-                                        onClick={() => setCurrentPage(p => p - 1)}
-                                        className="w-8 h-8 flex items-center justify-center disabled:opacity-20 hover:text-orange-500 transition-colors"
-                                    >
-                                        <FaChevronLeft size={14} />
-                                    </button>
-                                    
+                                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="w-8 h-8 flex items-center justify-center disabled:opacity-10 hover:text-orange-500 transition-colors"><div className="flex items-center -space-x-1"><FaChevronLeft size={10} /><FaChevronLeft size={10} /></div></button>
+                                    <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="w-8 h-8 flex items-center justify-center disabled:opacity-20 hover:text-orange-500 transition-colors"><FaChevronLeft size={14} /></button>
                                     <div className="flex items-center gap-1 md:gap-2">
                                         {getPageNumbers().map((pageNum) => (
-                                            <button
-                                                key={pageNum}
-                                                onClick={() => setCurrentPage(pageNum)}
-                                                className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-xl font-black text-xs md:text-sm transition-all ${
-                                                    currentPage === pageNum 
-                                                    ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30" 
-                                                    : "hover:bg-white/60 dark:bg-zinc-600/60 dark:text-white text-slate-600 bg-white/30 dark:hover:bg-zinc-500"
-                                                }`}
-                                            >
-                                                {pageNum}
-                                            </button>
+                                            <button key={pageNum} onClick={() => setCurrentPage(pageNum)} className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-xl font-black text-xs md:text-sm transition-all ${currentPage === pageNum ? "bg-orange-500 text-white shadow-lg shadow-orange-500/30" : "hover:bg-white/60 dark:bg-zinc-600/60 dark:text-white text-slate-600 bg-white/30 dark:hover:bg-zinc-500"}`}>{pageNum}</button>
                                         ))}
                                     </div>
-
-                                    <button 
-                                        disabled={currentPage === totalPages}
-                                        onClick={() => setCurrentPage(p => p + 1)}
-                                        className="w-8 h-8 flex items-center justify-center disabled:opacity-20 hover:text-orange-500 transition-colors"
-                                    >
-                                        <FaChevronRight size={14} />
-                                    </button>
-                                    <button 
-                                        disabled={currentPage === totalPages}
-                                        onClick={() => setCurrentPage(totalPages)}
-                                        className="w-8 h-8 flex items-center justify-center disabled:opacity-10 hover:text-orange-500 transition-colors md:flex"
-                                    >
-                                        <div className="flex items-center -space-x-1">
-                                            <FaChevronRight size={10} /><FaChevronRight size={10} />
-                                        </div>
-                                    </button>
+                                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="w-8 h-8 flex items-center justify-center disabled:opacity-20 hover:text-orange-500 transition-colors"><FaChevronRight size={14} /></button>
+                                    <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="w-8 h-8 flex items-center justify-center disabled:opacity-10 hover:text-orange-500 transition-colors"><div className="flex items-center -space-x-1"><FaChevronRight size={10} /><FaChevronRight size={10} /></div></button>
                                 </div>
                             )}
 
+                            {/* 검색 및 글쓰기 버튼 */}
                             <div className="px-6 md:px-10 py-4 border-t border-white/40 bg-white/30 flex flex-col md:flex-row items-center justify-between gap-4 dark:bg-zinc-600/30 dark:border-zinc-400/10">
                                 <div className="relative w-full md:w-72 group">
                                     <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white group-focus-within:text-orange-500 transition-colors " />
-                                    <input
-                                        type="text"
-                                        placeholder="SEARCH POSTS"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full bg-white/50 border border-white/60 rounded-2xl py-3 pl-12 pr-4 text-sm font-black focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all placeholder:text-slate-400 dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white"
-                                    />
+                                    <input type="text" placeholder="SEARCH POSTS" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/50 border border-white/60 rounded-2xl py-3 pl-12 pr-4 text-sm font-black focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all placeholder:text-slate-400 dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white" />
                                 </div>
-                                <button
-                                    onClick={() => setViewMode('write')}
-                                    className="w-full md:w-auto px-8 py-4 bg-orange-500 text-white rounded-2xl md:rounded-3xl shadow-[0_15px_30px_-5px_rgba(249,115,22,0.4)] flex items-center justify-center gap-3 border border-white/20 hover:bg-orange-600 active:scale-95 transition-all duration-300"
-                                >
+                                <button onClick={() => setViewMode('write')} className="w-full md:w-auto px-8 py-4 bg-orange-500 text-white rounded-2xl md:rounded-3xl shadow-[0_15px_30px_-5px_rgba(249,115,22,0.4)] flex items-center justify-center gap-3 border border-white/20 hover:bg-orange-600 active:scale-95 transition-all duration-300">
                                     <FaEdit className="text-xl md:text-2xl" />
                                     <span className="font-[1000] tracking-tighter text-sm md:text-base uppercase">Write Now</span>
                                 </button>
                             </div>
                         </motion.div>
-                    ) : viewMode === 'write' ? (
-                        <BoardWrite onBack={() => setViewMode('list')} />
+                    ) : viewMode === 'write' || viewMode === 'edit' ? (
+                       
+                        <BoardWrite 
+                            key="write"
+                            mode={viewMode}
+                            post={viewMode === 'edit' ? selectedPost : null}
+                            onBack={() => setViewMode(viewMode === 'edit' ? 'detail' : 'list')} 
+                            onSuccess={() => {
+                                fetchBoardData(); // 글 작성/수정 후 목록 새로고침
+                                setViewMode('list');
+                            }}
+                        />
                     ) : (
-                        <BoardDetail post={selectedPost} onBack={() => setViewMode('list')} />
+                     
+                        <BoardDetail 
+                            key="detail"
+                            post={selectedPost} 
+                            onBack={() => setViewMode('list')} 
+                            onEdit={() => setViewMode('edit')}
+                            onDeleteSuccess={() => {
+                                fetchBoardData();
+                                setViewMode('list');
+                            }}
+                        />
                     )}
                 </AnimatePresence>
             </div>
