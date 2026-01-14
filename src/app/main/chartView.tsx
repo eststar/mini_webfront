@@ -28,40 +28,13 @@ interface ReviewRank {
 }
 
 
-const RankItem = ({ item, index, type }: { item: any, index: number, type: 'top' | 'worst' }) => (
-    <motion.div
-        className="flex items-center justify-between p-4 bg-white/40 rounded-2xl border border-white/20 transition-all min-w-0 w-full dark:bg-zinc-600/30 dark:border-zinc-400/10"
-    >
-        {/* 왼쪽 섹션: 등수 + 이름 */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-            <span className={`text-xl font-black shrink-0 w-8 ${type === 'top' ? 'text-emerald-400' : 'text-red-400'}`}>
-                {index + 1}
-            </span>
-            <div className="min-w-0 flex-1">
-                <h4 className="font-bold text-slate-800 dark:text-white text-base md:text-lg truncate block" title={item.name}>
-                    {item.name}
-                </h4>
-                <p className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
-                    {item.reviewCount} Reviews
-                </p>
-            </div>
-        </div>
-
-        {/* 오른쪽 섹션: 평점 */}
-        <div className={`flex items-center gap-1 bg-white dark:bg-zinc-600 px-3 py-1 rounded-xl shadow-sm shrink-0 ml-2  `}>
-            <span className={`text-xs ${type === 'top' ? 'text-emerald-500' : 'text-red-500'}`}>★</span>
-            <span className="font-black text-slate-800 dark:text-white text-sm">{item.score}</span>
-        </div>
-    </motion.div>
-);
-
 export default function ChartView() {
     const [rawToiletData, setRawToiletData] = useState<any[]>([]);
     const [filterMode, setFilterMode] = useState<'all' | 'secure' | 'accessible' | 'family'>('all');
     const [reviewRank, setReviewRank] = useState<ReviewRank[]>([]);
 
-    const { theme } = useTheme();
-    const tickColor = theme === 'dark' ? '#cbd5e1' : '#1e293b';
+    const { theme, resolvedTheme } = useTheme();
+    const tickColor = resolvedTheme === 'dark' ? '#cbd5e1' : '#1e293b';
     useEffect(() => {
         const fetchToilets = async () => {
             try {
@@ -133,6 +106,36 @@ export default function ChartView() {
         return new Set(filteredData.map(t => String(t.toiletNm)));
     }, [filteredData]);
 
+    // 리뷰 랭킹
+    const RankItem = ({ item, index, type }: { item: any, index: number, type: 'top' | 'worst' }) => (
+        <motion.div
+            className="flex items-center justify-between p-4 bg-white/40 rounded-2xl border border-white/20 transition-all min-w-0 w-full dark:bg-zinc-600/30 dark:border-zinc-400/10"
+        >
+            {/* 왼쪽 섹션: 등수 + 이름 */}
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+                <span className={`text-xl font-black shrink-0 w-8 ${type === 'top' ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {index + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-slate-800 dark:text-white text-base md:text-lg truncate block" title={item.name}>
+                        {item.name}
+                    </h4>
+                    <p className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+                        {item.reviewCount} Reviews
+                    </p>
+                </div>
+            </div>
+
+            {/* 오른쪽 섹션: 평점 */}
+            <div className={`flex items-center gap-1 bg-white dark:bg-zinc-600 px-3 py-1 rounded-xl shadow-sm shrink-0 ml-2  `}>
+                <span className={`text-xs ${type === 'top' ? 'text-emerald-500' : 'text-red-500'}`}>★</span>
+                <span className="font-black text-slate-800 dark:text-white text-sm">{item.score}</span>
+            </div>
+        </motion.div>
+    );
+
+
+
     const top5 = useMemo(() => {
         if (!reviewRank.length || filteredIds.size === 0) return [];
 
@@ -169,7 +172,7 @@ export default function ChartView() {
                         { id: 'all', label: '전체 시설', icon: <FaToilet />, count: totalStats?.all, color: 'ring-slate-400/50' },
                         { id: 'secure', label: '비상벨, CCTV 설치 시설', icon: <FaShieldAlt />, count: totalStats?.secure, color: 'ring-emerald-500/50' },
                         { id: 'accessible', label: '장애인 편의 시설', icon: <FaWheelchair />, count: totalStats?.accessible, color: 'ring-blue-500/50' },
-                        { id: 'family', label: '유아 편의 시설', icon: <MdBabyChangingStation />, count: totalStats?.family, color: 'ring-orange-500/50' },
+                        { id: 'family', label: '유아 편의 시설', icon: <MdBabyChangingStation />, count: totalStats?.family, color: 'ring-orange-400/50' },
                     ].map((btn) => (
                         <motion.button
                             key={btn.id}
@@ -203,7 +206,7 @@ export default function ChartView() {
                                 {/* <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff" /> */}
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} interval={0} tick={{ fill: tickColor }} fontSize={12} />
                                 <YAxis hide />
-                                <Bar dataKey="value" fill="#f97316" radius={[10, 10, 0, 0]} barSize={40} isAnimationActive={true}>
+                                <Bar dataKey="value" fill="#fb9928" radius={[10, 10, 0, 0]} barSize={40} isAnimationActive={true}>
                                     <LabelList
                                         dataKey="value"
                                         position="middle"

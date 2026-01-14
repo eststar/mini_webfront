@@ -43,7 +43,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
     const [toilets, setToilets] = useState<Toilet[]>(cachedToilets);
     const [level, setLevel] = useState(3);
     const [map, setMap] = useState<kakao.maps.Map | null>(null);
-    const { theme } = useTheme();
+    const { theme, resolvedTheme } = useTheme();
 
     const [selectedToilet, setSelectedToilet] = useState<Toilet | null>(null);
 
@@ -51,7 +51,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
         <motion.div
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            className="w-7 h-7 mx-auto border-4 border-white/10 border-t-orange-500 border-l-orange-500 rounded-full flex justify-center items-center"
+            className="w-7 h-7 mx-auto border-4 border-white/10 border-t-orange-400 border-l-orange-400 rounded-full flex justify-center items-center"
         />
     );
 
@@ -85,7 +85,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
 
 
     if (loading) return (
-        <div className="flex h-full items-center justify-center font-black text-orange-500 animate-pulse text-2xl tracking-widest bg-white/10 backdrop-blur-md">
+        <div className="flex h-full items-center justify-center font-black text-orange-400 animate-pulse text-2xl tracking-widest bg-white/10 backdrop-blur-md">
             <Spinner />
         </div>
     );
@@ -95,7 +95,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
         <div className="w-full h-full relative">
             <Map
                 center={Pos}
-                style={{ width: "100%", height: "100%", filter: theme === 'dark' ? 'invert(100%) hue-rotate(180deg)' : 'none' }}
+                style={{ width: "100%", height: "100%", filter: resolvedTheme === 'dark' ? 'invert(100%) hue-rotate(180deg)' : 'none' }}
                 level={3}
                 onCreate={(map) => {
                     setMap(map);
@@ -127,16 +127,14 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
                             {
                                 width: '60px',
                                 height: '60px',
-                                background: 'rgba(249, 115, 22, 0.85)',
+                                background: 'rgba(251, 146, 60, 0.9)',
                                 borderRadius: '50%',
                                 color: '#fff',
                                 textAlign: 'center',
                                 fontWeight: '1000',
                                 lineHeight: '60px',
                                 fontSize: '18px',
-                                boxShadow: theme === 'dark'
-                                    ? '0 0 25px rgba(249, 115, 22, 0.6)'
-                                    : '0 10px 20px rgba(0,0,0,0.3)',
+                                
                             }
                         ]}
                     >
@@ -146,7 +144,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
                                 position={{ lat: toilet.laCrdnt, lng: toilet.loCrdnt }}
                             >
 
-                                <div className={`relative w-0 flex flex-col h-0 items-center justify-end ${theme === 'dark' ? 'invert hue-rotate-180' : ''
+                                <div className={`relative w-0 flex flex-col h-0 items-center justify-end ${resolvedTheme === 'dark' ? 'invert hue-rotate-180' : ''
                                     }`}
                                     onClick={(e) => {
                                         if (!map) return;
@@ -189,7 +187,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
                                     )}
 
                                     <div className="relative h-6 w-6 flex items-center justify-center">
-                                        <div className="w-3.5 h-3.5 bg-orange-500 rounded-full shadow-md z-10 border border-white flex justify-center items-center text-center" />
+                                        <div className="w-3.5 h-3.5 bg-orange-400 rounded-full shadow-md z-10 border border-white/50 dark:border-zinc-800/50 flex justify-center items-center text-center" />
                                         <div className="absolute w-7 h-7 bg-orange-400/30 rounded-full animate-ping" />
                                     </div>
                                 </div>
@@ -210,7 +208,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
                 )}
             </AnimatePresence>
 
-            <div className="absolute bottom-8 right-3 z-999">
+            <div className="absolute bottom-8 md:right-10 right-2 z-50">
                 <button
                     onClick={() => {
                         if (!map) return;
@@ -220,9 +218,9 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
                         }
                         map.panTo(pos);
                     }}
-                    className="group relative w-14 h-14 bg-white/40 backdrop-blur-2xl border border-white/60  rounded-full   shadow-[0_0_20px_rgba(0,0,0,0.4)] flex items-center justify-center transition-all active:scale-90 hover:border-orange-500/50 cursor-pointer dark:bg-zinc-600/30 dark:border-zinc-400/10"
+                    className="group relative w-12 h-12 md:w-14 md:h-14 bg-white/40 backdrop-blur-2xl border border-white/60  rounded-full   shadow-[0_0_20px_rgba(0,0,0,0.4)] flex items-center justify-center transition-all active:scale-90 hover:border-orange-400/50 cursor-pointer dark:bg-zinc-600/30 dark:border-zinc-400/10"
                 >
-                    <MdGpsFixed className="text-slate-700 dark:text-white text-2xl group-hover:text-orange-500 transition-colors" />
+                    <MdGpsFixed className="text-slate-700 dark:text-white text-2xl group-hover:text-orange-400 transition-colors" />
                 </button>
             </div>
         </div>

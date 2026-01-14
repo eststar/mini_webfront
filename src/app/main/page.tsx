@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { FaMapMarkerAlt, FaList, FaClipboardList, FaChartPie } from "react-icons/fa";
+import { FaMapMarkedAlt, FaClipboardList, FaChartPie } from "react-icons/fa";
 import { useTheme } from "next-themes";
 import MapView from "./mapView";
 import BoardView from "./boardView"
@@ -31,7 +31,7 @@ export default function MainPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userData, setUserData] = useState<any>({});
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
     const [isRealLocation, setIsRealLocation] = useState(() => {
@@ -115,15 +115,11 @@ export default function MainPage() {
         }
     }, [isRealLocation]);
 
-
-
-
     if (!mounted) {
         return null;
     }
-
     const menuItems = [
-        { icon: <FaMapMarkerAlt />, id: 0 },
+        { icon: <FaMapMarkedAlt />, id: 0 },
         { icon: <FaChartPie />, id: 1 },
         { icon: <FaClipboardList />, id: 2 },
     ];
@@ -137,29 +133,46 @@ export default function MainPage() {
     const renderContent = () => {
         if (!isClient) return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData} />;
         switch (activeTab) {
-            case 0: return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData}/>;
+            case 0: return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData} />;
             case 1: return <ChartView />;
-            case 2: return <BoardView />;
-            default: return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData}/>;
+            case 2: return <BoardView userData={userData} />;
+            default: return <MapView key={`map-${isRealLocation}`} Pos={currentPos} isRealLocation={isRealLocation} userData={userData} />;
         }
     };
 
-    const handleAuth = () => {
+    const handleAuth = async () => {
         if (isLoggedIn) {
-            document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            if (!confirm("로그아웃 하시겠습니까?")) return;
 
-            setIsLoggedIn(false);
-            alert("로그아웃 되었습니다.");
-            router.refresh();
-        } else {
-            router.push('/login');
-        }
+            try {
+                
+                const res = await fetch("/back/logout", {
+                    method: "POST",
+                    credentials: "include", 
+                });
+
+                if (res.ok) {
+                    
+                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    setIsLoggedIn(false);
+                    setUserData({});
+                    console.log("로그아웃 성공")
+                    
+                    router.refresh();
+                } else {
+                    alert("로그아웃 실패: 서버 응답 에러");
+                }
+            } catch (err) {
+                console.error("🚨 로그아웃 통신 실패:", err);
+                alert("로그아웃 중 오류가 발생했습니다.");
+            }
+        } 
     };
 
     return (
-        <main className="relative w-screen h-screen overflow-hidden inset-0 z-0 bg-linear-to-tr from-[#e1fbff] via-[#ffe9c5] to-[#e0f5ff] text-black font-sans selection:bg-orange-100 dark:text-white">
-            {theme === 'dark' && (
+        <main className="relative w-screen h-screen overflow-hidden inset-0 z-0 bg-linear-to-tr from-[#e0f5ff] via-[#ffe9c5] to-[#e0f5ff] text-black font-sans selection:bg-orange-100 dark:text-white">
+            {mounted && resolvedTheme === 'dark' && (
                 <div className="absolute inset-0 z-10 pointer-events-none bg-zinc-950/80 mix-blend-multiply" />
             )}
             <motion.nav
@@ -171,7 +184,7 @@ export default function MainPage() {
                     <div onClick={() => router.push('/')}
                         className="group relative flex items-center gap-2 px-5 py-3 md:px-8 md:py-5 bg-white/30 backdrop-blur-2xl border border-white/50 rounded-full md:rounded-[40px] shadow-2xl cursor-pointer transition-all duration-300 active:scale-95 dark:bg-zinc-600/40 dark:border-zinc-400/10">
                         <h1 className="text-lg md:text-3xl font-[1000] tracking-widest uppercase leading-none group-hover:scale-105">
-                            <span className="text-orange-500">PEECE</span>
+                            <span className="text-orange-400">PEECE</span>
                             <span className="ml-1 text-slate-700 dark:text-white">MAKER</span>
                         </h1>
                     </div>
@@ -181,7 +194,7 @@ export default function MainPage() {
 
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="group relative px-6 py-3 md:px-10 md:py-5 bg-orange-500/85 backdrop-blur-md text-white font-[950] md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-600/85 active:scale-95 transition-all cursor-pointer overflow-hidden flex flex-row justify-center items-center"
+                        className="group relative px-6 py-3 md:px-10 md:py-5 bg-orange-400/85 backdrop-blur-md text-white font-[950] md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-400/85 active:scale-95 transition-all cursor-pointer overflow-hidden flex flex-row justify-center items-center"
                     >
 
                         {isLoggedIn && <p className="mr-3 text-2xl">{userData?.nickname}</p>}
@@ -215,11 +228,10 @@ export default function MainPage() {
                                                     {item.icon}
                                                 </span>
 
-
                                                 {mounted && theme === item.value && (
                                                     <motion.div
                                                         layoutId="theme-pill"
-                                                        className="absolute inset-0 bg-orange-500 rounded-xl z-10 shadow-lg"
+                                                        className="absolute inset-0 bg-orange-400 rounded-xl z-10 shadow-lg"
                                                         transition={{ type: "spring", stiffness: 400, damping: 30 }}
                                                     />
                                                 )}
@@ -231,43 +243,41 @@ export default function MainPage() {
                                 <div className="h-px bg-slate-400/50 dark:bg-white/30" />
 
                                 {/* 섹션 2 GPS 토글 */}
-                                <AnimatePresence>
-                                    {activeTab === 0 && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            className="overflow-hidden"
-                                        >
 
-                                            <div className="space-y-3">
-                                                <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">
-                                                    GPS Settings
-                                                </p>
-                                                <div className="flex items-center justify-between px-4 py-4 transition-all">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-slate-700 dark:text-white/90">
-                                                            {isRealLocation ? "현 위치" : "제주도"}
-                                                        </span>
-                                                    </div>
-                                                    <div
-                                                        onClick={() => setIsRealLocation(!isRealLocation)}
-                                                        className={`relative w-14 h-7 rounded-full cursor-pointer transition-all duration-500 flex items-center px-1.5 ${isRealLocation ? 'bg-orange-500 ' : 'bg-slate-400 dark:bg-zinc-700'
-                                                            }`}
-                                                    >
-                                                        <motion.div
-                                                            animate={{ x: isRealLocation ? 24 : 0 }}
-                                                            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                                            className="w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center"
-                                                        />
-                                                    </div>
+                                {activeTab === 0 && (
+                                    <div
+
+                                        className="overflow-hidden"
+                                    >
+
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">
+                                                GPS Settings
+                                            </p>
+                                            <div className="flex items-center justify-between px-4 py-4 transition-all">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold text-slate-700 dark:text-white/90">
+                                                        {isRealLocation ? "현 위치" : "제주도"}
+                                                    </span>
+                                                </div>
+                                                <div
+                                                    onClick={() => setIsRealLocation(!isRealLocation)}
+                                                    className={`relative w-14 h-7 rounded-full cursor-pointer transition-all duration-500 flex items-center px-1.5 ${isRealLocation ? 'bg-orange-400 ' : 'bg-slate-400 dark:bg-zinc-700'
+                                                        }`}
+                                                >
+                                                    <motion.div
+                                                        animate={{ x: isRealLocation ? 24 : 0 }}
+                                                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                                        className="w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center"
+                                                    />
                                                 </div>
                                             </div>
-                                            <div className="h-px bg-slate-400/50 dark:bg-white/30" />
-                                        </motion.div>
-                                    )}
+                                        </div>
+                                        <div className="h-px bg-slate-400/50 dark:bg-white/30" />
+                                    </div>
+                                )}
 
-                                </AnimatePresence>
+
 
 
                                 {/* 섹션 3: 회원 메뉴  */}
@@ -277,13 +287,13 @@ export default function MainPage() {
                                         <div className="flex flex-col gap-1">
                                             <button
                                                 onClick={() => { setIsMenuOpen(false); router.push('/changeinfo'); }}
-                                                className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-600 rounded-xl transition-all"
+                                                className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-400 rounded-xl transition-all"
                                             >
                                                 회원 정보 변경
                                             </button>
                                             <button
                                                 onClick={handleAuth}
-                                                className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-600 rounded-xl transition-all"
+                                                className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-400 rounded-xl transition-all"
                                             >
                                                 로그아웃
                                             </button>
@@ -291,9 +301,9 @@ export default function MainPage() {
                                     ) : (
                                         <button
                                             onClick={() => { setIsMenuOpen(false); router.push('/login'); }}
-                                            className="w-full mt-2 py-4 bg-orange-500 text-white rounded-2xl text-[11px] font-black tracking-widest uppercase hover:bg-orange-600 transition-all shadow-lg active:scale-95"
+                                            className="w-full mt-2 py-3 bg-orange-400 text-white rounded-2xl text-xl font-black tracking-widest uppercase hover:bg-orange-400 transition-all shadow-lg active:scale-95"
                                         >
-                                            로그인
+                                            Log In
                                         </button>
                                     )}
                                 </div>
@@ -303,7 +313,7 @@ export default function MainPage() {
                                     <p className="text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1">About</p>
                                     <button
                                         onClick={() => { setIsMenuOpen(false); router.push('/about'); }}
-                                        className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-600 rounded-xl transition-all"
+                                        className="w-full text-left px-3 py-3 text-sm font-bold text-slate-700 dark:text-white/90 hover:text-orange-400 rounded-xl transition-all"
                                     >
                                         About Page
                                     </button>
@@ -351,7 +361,7 @@ export default function MainPage() {
                             {activeTab === item.id && (
                                 <motion.div
                                     layoutId="active-pill"
-                                    className="absolute inset-0 bg-orange-500/90 rounded-[25px] md:rounded-[35px] z-10"
+                                    className="absolute inset-0 bg-orange-400/90 rounded-[25px] md:rounded-[35px] z-10"
                                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                                 />
                             )}

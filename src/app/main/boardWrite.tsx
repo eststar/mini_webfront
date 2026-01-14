@@ -5,27 +5,28 @@ import { motion } from "framer-motion";
 import { FaArrowLeft, FaCheck, FaPaperPlane, FaPenNib } from "react-icons/fa";
 
 interface Board {
-    id: number;
-    name: string;
+    boardId: number;
+    nickname: string;
     title: string;
     content: string;
-    member_id: string;
-    create_date: string;
+    memberId: string;
+    createDate: string;
+    commentCnt: number;
 }
-
 interface WriteProps {
     onBack: () => void;
-    onSuccess: () => void; // 등록/수정 성공 시 호출
+    onSuccess: () => void; 
     mode?: 'write' | 'edit';
-    post?: Board | null; // 수정 모드일 때 전달받는 데이터
+    post?: Board | null;
+    userData?: any;
 }
 
-export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: WriteProps) {
+export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, userData }: WriteProps) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const isEditMode = mode === 'edit';
 
-    // 수정 모드일 경우 기존 데이터 세팅
+
     useEffect(() => {
         if (isEditMode && post) {
             setTitle(post.title);
@@ -33,20 +34,38 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: 
         }
     }, [isEditMode, post]);
 
-    
+
     const handleSubmit = async () => {
         if (!title.trim() || !content.trim()) {
             alert("제목과 내용을 모두 입력해주십시오.");
             return;
         }
-
         try {
-            
-            alert(isEditMode ? "수정 완료" : "등록 완료");
-            onSuccess(); // 목록 갱신 및 리스트로 돌아가기
+            const url = isEditMode ? "/back/api/test/board/putboard" : "/back/api/test/board/postboard";
+            const method = isEditMode ? "PUT" : "POST";
+
+            const response = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title,
+                    content,
+                    ...(isEditMode && { boardId: post?.boardId }) 
+                }),
+                credentials: 'include' 
+            });
+
+            if (response.ok) {
+                alert(isEditMode ? "수정 완료" : "등록 완료");
+                onSuccess(); 
+            } else {
+                const msg = response.status === 403 ? "권한이 없습니다." : "작업 실패";
+                alert(msg);
+            }
         } catch (err) {
             console.error("저장 에러:", err);
-            alert("오류 발생");
+            alert("통신 오류 발생");
+
         }
     };
 
@@ -56,7 +75,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: 
             initial={{ opacity: 0}}
             animate={{ opacity: 1}}
             exit={{ opacity: 0}}
-            className="flex flex-col h-full overflow-hidden"
+            className="flex flex-col h-full overflow-hidden scrollbar-hide"
         >
             {/* 상단 헤더 */}
             <div className="flex items-center justify-between px-8 py-6 border-b border-white/10">
@@ -68,7 +87,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: 
                         <FaArrowLeft className="text-slate-700 dark:text-white" />
                     </button>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-orange-500 tracking-[0.2em] uppercase opacity-80">Community Board</span>
+                        <span className="text-[10px] font-black text-orange-400 tracking-[0.2em] uppercase opacity-80">Community Board</span>
                         <h2 className="text-2xl md:text-3xl font-[1000] text-slate-800 dark:text-white tracking-tighter uppercase flex items-center gap-2">
                             {isEditMode ? "Edit Post" : "New Post"}
                         </h2>
@@ -77,7 +96,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: 
             </div>
 
             {/* 입력 영역 */}
-            <div className="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-8 md:p-12  scrollbar-hide">
                 <div className="max-w-4xl mx-auto flex flex-col gap-8">
                     {/* 제목 입력 */}
                     <div className="group space-y-2">
@@ -85,7 +104,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: 
                         <input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full bg-white/40 border-2 border-white/60 p-6 rounded-3xl text-xl md:text-2xl font-black outline-none focus:border-orange-500 focus:bg-white/80 transition-all shadow-sm dark:bg-zinc-700/30 dark:border-zinc-600 dark:text-white dark:focus:border-orange-600"
+                            className="w-full bg-white/40 border-2 border-white/20 p-6 rounded-3xl text-xl md:text-2xl font-black outline-none focus:border-orange-400 transition-all dark:bg-zinc-700/30 dark:border-zinc-600/10 dark:text-white "
                             placeholder="제목"
                         />
                     </div>
@@ -96,7 +115,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: 
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            className="w-full h-64 md:h-80 bg-white/40 border-2 border-white/60 p-8 rounded-[2.5rem] text-lg font-bold outline-none focus:border-orange-500 focus:bg-white/80 transition-all resize-none shadow-inner custom-scrollbar dark:bg-zinc-700/30 dark:border-zinc-600 dark:text-white dark:focus:border-orange-600"
+                            className="w-full h-64 md:h-80 bg-white/40 border-2 border-white/20 p-8 rounded-[2.5rem] text-lg font-bold outline-none focus:border-orange-400 transition-all resize-none dark:bg-zinc-700/30 dark:border-zinc-600/10 dark:text-white"
                             placeholder="내용"
                         />
                     </div>
@@ -114,7 +133,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post }: 
                     </button>
                     <button 
                         onClick={handleSubmit}
-                        className="flex-[2] p-5 bg-orange-500 text-white rounded-3xl font-[1000] text-lg md:text-xl shadow-[0_20px_40px_-10px_rgba(249,115,22,0.4)] hover:bg-orange-600 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3"
+                        className="flex-2 p-5 bg-orange-400 text-white rounded-3xl font-[1000] text-lg md:text-xl shadow-[0_20px_40px_-10px_rgba(249,115,22,0.4)] hover:bg-orange-600 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3"
                     >
                         <FaPaperPlane />
                         <span>{isEditMode ? "UPDATE POST" : "POST NOW"}</span>
