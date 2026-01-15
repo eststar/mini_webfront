@@ -149,7 +149,7 @@ export default function MainPage() {
 
             try {
 
-                const res = await fetch("/back/logout", {
+                const res = await fetch("https://unlabeled-engrossingly-fallon.ngrok-free.dev/logout", {
                     method: "POST",
                     headers: {
                         "ngrok-skip-browser-warning": "69420",
