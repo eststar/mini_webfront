@@ -62,7 +62,7 @@ export default function MainPage() {
                 const res = await fetch("https://unlabeled-engrossingly-fallon.ngrok-free.dev/api/members/myinfo", {
                     method: "GET",
                     headers: {
-                        "ngrok-skip-browser-warning": "69420", 
+                        "ngrok-skip-browser-warning": "69420",
                     },
                     credentials: "include",
                 });
@@ -142,29 +142,38 @@ export default function MainPage() {
         }
     };
 
+
     const handleAuth = async () => {
         if (isLoggedIn) {
             if (!confirm("로그아웃 하시겠습니까?")) return;
 
             try {
-                
+
                 const res = await fetch("/back/logout", {
                     method: "POST",
                     headers: {
-                        "ngrok-skip-browser-warning": "69420", 
+                        "ngrok-skip-browser-warning": "69420",
                     },
-                    credentials: "include", 
+                    credentials: "include",
                 });
 
                 if (res.ok) {
-                    
+
                     document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     setIsLoggedIn(false);
                     setUserData({});
                     console.log("로그아웃 성공")
-                    
-                    router.refresh();
+                    const cookies = document.cookie.split(";");
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i];
+                        const eqPos = cookie.indexOf("=");
+                        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                        // 모든 경로와 모든 도메인(가능한 범위 내)에서 쿠키 삭제 시도
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
+                    }
+                    window.location.href;
                 } else {
                     alert("로그아웃 실패: 서버 응답 에러");
                 }
@@ -172,7 +181,7 @@ export default function MainPage() {
                 console.error("🚨 로그아웃 통신 실패:", err);
                 alert("로그아웃 중 오류가 발생했습니다.");
             }
-        } 
+        }
     };
 
     return (
