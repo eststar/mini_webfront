@@ -181,7 +181,7 @@ export default function MapView({ Pos, userData }: MapViewProps) {
                                     ))}
                                 </div>
                             </div>
-
+                                    
                             {/* 성별 유무*/}
                             <div className="flex flex-col gap-4">
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Gender Availability</span>

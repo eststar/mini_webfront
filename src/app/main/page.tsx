@@ -59,7 +59,7 @@ export default function MainPage() {
 
         const checkAuth = async () => {
             try {
-                const res = await fetch("/back/api/members/myinfo", {
+                const res = await fetch("https://unlabeled-engrossingly-fallon.ngrok-free.dev/api/members/myinfo", {
                     method: "GET",
                     headers: {
                         "ngrok-skip-browser-warning": "69420", 

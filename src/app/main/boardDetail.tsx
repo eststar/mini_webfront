@@ -150,6 +150,7 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
         try {
             const response = await fetch(`/back/api/test/board/deleteboard/${post.boardId}`, {
                 method: 'DELETE',
+                headers: {  'ngrok-skip-browser-warning': '69420'},
                 credentials: 'include',
             });
             if (response.ok) {
