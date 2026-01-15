@@ -84,7 +84,7 @@ export default function LoginPage() {
   }
 
   const handleSocialLogin = (provider: 'google' | 'naver') => {
-    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}`;
+    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?target=/main`;
     
   };
 

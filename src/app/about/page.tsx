@@ -167,8 +167,8 @@ export default function AboutPage() {
                                     {[
                                         { label: "데이터 명칭", value: "제주특별자치도 제주시_공중화장실" },
                                         { label: "제공 기관", value: "제주특별자치도 제주시" },
-                                        { label: "데이터 형식", value: "CSV / Open API" },
-                                        { label: "핵심 컬럼", value: "위경도, 비상벨·CCTV 설치여부, 개방시간" }
+                                        { label: "출처", value: "공공 데이터 포털" },
+                                        { label: "핵심 컬럼", value: "위경도, 비상벨·CCTV 설치여부, 개방시간" },
                                     ].map((item, i) => (
                                         <li key={i} className="flex flex-col border-b border-white/5 pb-3">
                                             <span className="text-lg text-orange-400 font-bold tracking-widest">{item.label}</span>
