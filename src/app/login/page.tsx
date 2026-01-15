@@ -91,10 +91,10 @@ export default function LoginPage() {
   const handleSocialLogin = (provider: 'google' | 'naver') => {
     const returnUrl = encodeURIComponent(`${window.location.origin}/main`);
 
-    // 쿠키도 일단 구워둔다 (백엔드가 혹시나 읽을 수도 있으니)
+    
     document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
 
-    // 핵심: 주소 뒤에 직접 붙여서 쏜다! 이건 도메인이 달라도 무조건 전달된다.
+    
     window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl}`;
   };
 

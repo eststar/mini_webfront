@@ -63,6 +63,7 @@ export default function MainPage() {
                     method: "GET",
                     headers: {
                         "ngrok-skip-browser-warning": "69420",
+                        "Accept": "application/json",
                     },
                     credentials: "include",
                 });
