@@ -59,7 +59,7 @@ export default function MainPage() {
 
         const checkAuth = async () => {
             try {
-                const res = await fetch("https://unlabeled-engrossingly-fallon.ngrok-free.dev/api/members/myinfo", {
+                const res = await fetch("/back/api/members/myinfo", {
                     method: "GET",
                     headers: {
                         "ngrok-skip-browser-warning": "69420",
@@ -150,7 +150,7 @@ export default function MainPage() {
 
             try {
 
-                const res = await fetch("https://unlabeled-engrossingly-fallon.ngrok-free.dev/logout", {
+                const res = await fetch("/back/logout", {
                     method: "POST",
                     headers: {
                         "ngrok-skip-browser-warning": "69420",
@@ -160,21 +160,15 @@ export default function MainPage() {
 
                 if (res.ok) {
 
-                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                   
                     setIsLoggedIn(false);
                     setUserData({});
+                    setIsMenuOpen(false);
                     console.log("로그아웃 성공")
-                    const cookies = document.cookie.split(";");
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i];
-                        const eqPos = cookie.indexOf("=");
-                        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                        // 모든 경로와 모든 도메인(가능한 범위 내)에서 쿠키 삭제 시도
-                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=" + window.location.hostname;
-                    }
-                    window.location.href;
+                    localStorage.removeItem("activeTab");
+                    
+                    
+                    window.location.replace("/main");
                 } else {
                     alert("로그아웃 실패: 서버 응답 에러");
                 }

@@ -92,12 +92,11 @@ export default function LoginPage() {
     const returnUrl = encodeURIComponent(`${window.location.origin}/main`);
 
     
-    document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
+  
 
     
-    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl}`;
+    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl};`
   };
-
 
   useEffect(() => {
     setMounted(true);
