@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
       {
         // 프록시
         source: '/back/:path*',
-        destination: 'http://10.125.121.186:8081/:path*',
+        // destination: 'http://10.125.121.186:8081/:path*',
+        destination: 'https://unlabeled-engrossingly-fallon.ngrok-free.dev/:path*',
       },
     ];
   },
