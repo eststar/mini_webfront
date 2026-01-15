@@ -41,7 +41,13 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
     // 댓글 목록 가져오기
     const fetchCommentData = useCallback(async () => {
         try {
-            const response = await fetch(`/back/api/test/comment/${post.boardId}/all`);
+            const response = await fetch(`/back/api/test/comment/${post.boardId}/all`, {
+                method: "GET",
+                headers: {
+                    "ngrok-skip-browser-warning": "69420",
+                },
+                credentials: "include",
+            });
             const commentRes = await response.json();
 
             if (commentRes && Array.isArray(commentRes)) {
@@ -74,7 +80,7 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
 
             const response = await fetch(targetUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '69420' },
                 body: JSON.stringify({
                     content: commentText,
                     boardId: post.boardId 
@@ -103,7 +109,7 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
         try {
             const response = await fetch(`/back/api/test/comment/putcomment`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '69420'},
                 body: JSON.stringify({ content: editText,
                     boardId: post.boardId,
                     commentId: commentId
@@ -126,6 +132,7 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
         try {
             const response = await fetch(`/back/api/test/comment/deletecomment/${commentId}`, {
                 method: 'DELETE',
+                headers: {  'ngrok-skip-browser-warning': '69420'},
                 credentials: 'include',
             });
             if (response.ok) {

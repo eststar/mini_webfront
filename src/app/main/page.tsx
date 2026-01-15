@@ -33,7 +33,7 @@ export default function MainPage() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { theme, setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
-    const [direction, setDirection] = useState(0);
+
     const [isRealLocation, setIsRealLocation] = useState(() => {
         if (typeof window !== "undefined") {
             const saved = localStorage.getItem("isRealLocation");
@@ -41,26 +41,6 @@ export default function MainPage() {
         }
         return false;
     });
-
-    const handleTabChange = (newTab: number) => {
-        setDirection(newTab > activeTab ? 1 : -1);
-        setActiveTab(newTab);
-    };
-
-    const slideVariants = {
-        enter: (d: number) => ({
-            opacity: 0,
-            x: d * 50,
-        }),
-        center: {
-            opacity: 1,
-            x: 0,
-        },
-        exit: (d: number) => ({
-            opacity: 0,
-            x: d * -50,
-        }),
-    };
 
     const [currentPos, setCurrentPos] = useState(jejuPos);
     useEffect(() => {
@@ -81,7 +61,9 @@ export default function MainPage() {
             try {
                 const res = await fetch("/back/api/members/myinfo", {
                     method: "GET",
-
+                    headers: {
+                        "ngrok-skip-browser-warning": "69420", 
+                    },
                     credentials: "include",
                 });
 
@@ -165,20 +147,23 @@ export default function MainPage() {
             if (!confirm("로그아웃 하시겠습니까?")) return;
 
             try {
-
+                
                 const res = await fetch("/back/logout", {
                     method: "POST",
-                    credentials: "include",
+                    headers: {
+                        "ngrok-skip-browser-warning": "69420", 
+                    },
+                    credentials: "include", 
                 });
 
                 if (res.ok) {
-
+                    
                     document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     document.cookie = "isLoggedIn=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
                     setIsLoggedIn(false);
                     setUserData({});
                     console.log("로그아웃 성공")
-
+                    
                     router.refresh();
                 } else {
                     alert("로그아웃 실패: 서버 응답 에러");
@@ -187,7 +172,7 @@ export default function MainPage() {
                 console.error("🚨 로그아웃 통신 실패:", err);
                 alert("로그아웃 중 오류가 발생했습니다.");
             }
-        }
+        } 
     };
 
     return (
@@ -349,15 +334,13 @@ export default function MainPage() {
 
 
             <div className="w-full h-full relative z-10 overflow-hidden">
-                <AnimatePresence mode="wait" custom={direction}>
+                <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}
-                        custom={direction}
-                        variants={slideVariants} 
-                        initial="enter"         
-                        animate="center"
-                        exit="exit"
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        initial={{ opacity: 0, scale: 0.99 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.01 }}
+                        transition={{ duration: 0.25 }}
                         className="w-full h-full"
                     >
                         {renderContent()}
@@ -374,7 +357,7 @@ export default function MainPage() {
                     {menuItems.map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => handleTabChange(item.id)}
+                            onClick={() => setActiveTab(item.id)}
                             className={`relative px-7 py-4 md:px-10 md:py-5 rounded-[25px] md:rounded-[35px] transition-colors duration-300 flex items-center justify-center cursor-pointer ${activeTab === item.id ? 'text-white' : 'text-slate-700 hover:text-black'}`}
                         >
                             <span className={`text-2xl md:text-3xl relative z-30 transition-all duration-300 active:scale-75 ${activeTab === item.id ? 'text-white' : 'text-zinc-500'}`}>

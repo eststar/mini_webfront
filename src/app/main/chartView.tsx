@@ -38,7 +38,12 @@ export default function ChartView() {
     useEffect(() => {
         const fetchToilets = async () => {
             try {
-                const response = await fetch("/back/api/test/toiletinfo/getallinfo");
+                const response = await fetch("/back/api/test/toiletinfo/getallinfo",{
+                    method: "GET",
+                    headers: {
+                        "ngrok-skip-browser-warning": "69420", 
+                    },
+                });
                 const data = await response.json();
 
                 const list = data.toilet_info || data;
@@ -46,7 +51,12 @@ export default function ChartView() {
                     ...t
 
                 }));
-                const reviewRes = await fetch("/back/api/test/review/getreviewstat");
+                const reviewRes = await fetch("/back/api/test/review/getreviewstat", {
+                    method: "GET",
+                    headers: {
+                        "ngrok-skip-browser-warning": "69420", 
+                    },
+                });
                 const reviewData = await reviewRes.json();
 
                 setReviewRank(reviewData);
@@ -196,7 +206,7 @@ export default function ChartView() {
 
 
                     {/* 지역별 분포 */}
-                    <motion.div layout className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-xl shadow-2xl h-100 flex flex-col dark:bg-zinc-600/30 dark:border-zinc-400/10">
+                    <motion.div layout className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-xl shadow-2xl h-[400px] flex flex-col dark:bg-zinc-600/30 dark:border-zinc-400/10">
                         <h3 className="text-xl font-black mb-6 uppercase tracking-tight">
                             지역별 분포
                         </h3>
@@ -219,7 +229,7 @@ export default function ChartView() {
                     </motion.div>
 
                     {/* 남녀 변기 비율 */}
-                    <motion.div layout className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-2xl shadow-2xl h-100 flex flex-col dark:bg-zinc-600/30 dark:border-zinc-400/10">
+                    <motion.div layout className="bg-white/30 backdrop-blur-md border border-white/40 p-8 rounded-2xl shadow-2xl h-[400px] flex flex-col dark:bg-zinc-600/30 dark:border-zinc-400/10">
                         <h3 className="text-xl font-black mb-6 uppercase tracking-tight">
                             남녀 수용력
                         </h3>

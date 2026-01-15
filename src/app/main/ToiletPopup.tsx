@@ -61,7 +61,13 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
 
     const fetchReviews = async () => {
         try {
-            const response = await fetch(`/back/api/test/review/getreview?dataCd=${data.dataCd}`);
+            const response = await fetch(`/back/api/test/review/getreview?dataCd=${data.dataCd}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "ngrok-skip-browser-warning": "69420",
+                },
+            });
             const review: Review[] = await response.json();
             console.log(review)
             setReviews(review);

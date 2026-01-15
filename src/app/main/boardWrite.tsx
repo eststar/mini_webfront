@@ -46,7 +46,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
 
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "69420"},
                 body: JSON.stringify({
                     title,
                     content,

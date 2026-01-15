@@ -32,7 +32,12 @@ export default function BoardView({ userData }: BoardViewProps) {
 
     const fetchBoardData = useCallback(async () => {
         try {
-            const response = await fetch("/back/api/test/board/getallboard");
+            const response = await fetch("/back/api/test/board/getallboard", {
+                method: "GET",
+                headers: {
+                    "ngrok-skip-browser-warning": "69420",
+                },
+            });
             const boardRes = await response.json();
 
             if (boardRes && Array.isArray(boardRes)) {

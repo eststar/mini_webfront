@@ -57,7 +57,8 @@ export default function LoginPage() {
       const response = await fetch("/back/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420",
+          // "Content-Type": "application/json",
         },
         credentials: "include",
         body: JSON.stringify({

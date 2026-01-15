@@ -26,6 +26,7 @@ export default function signinPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "69420",
         },
         credentials: "include",
         body: JSON.stringify({

@@ -78,7 +78,12 @@ export default function MapView({ Pos, userData }: MapViewProps) {
 
         const fetchToilets = async () => {
             try {
-                const response = await fetch("/back/api/test/toiletinfo/getallinfo");
+                const response = await fetch("/back/api/test/toiletinfo/getallinfo", {
+                    method: "GET",
+                    headers: {
+                        "ngrok-skip-browser-warning": "69420", 
+                    },
+                });
                 const data = await response.json();
 
                 const list = data.toilet_info || data;
@@ -124,7 +129,7 @@ export default function MapView({ Pos, userData }: MapViewProps) {
         <div className="w-full h-full relative">
 
             <div className="absolute top-30 left-8 z-100 flex flex-col gap-3 items-start pointer-events-none">
-                
+
                 <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsFilterOpen(!isFilterOpen)}
