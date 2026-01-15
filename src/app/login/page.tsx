@@ -58,7 +58,7 @@ export default function LoginPage() {
         method: "POST",
         headers: {
           "ngrok-skip-browser-warning": "69420",
-          // "Content-Type": "application/json",
+          "Content-Type": "application/json",
         },
         credentials: "include",
         body: JSON.stringify({
@@ -92,11 +92,18 @@ export default function LoginPage() {
     const returnUrl = encodeURIComponent(`${window.location.origin}/main`);
 
     
-  
+    document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
 
     
-    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl};`
+    // window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl}`
+    window.location.href = `/back/oauth2/authorization/${provider}?target=${returnUrl}`
   };
+
+
+
+
+
+  
 
   useEffect(() => {
     setMounted(true);
