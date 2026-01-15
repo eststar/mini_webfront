@@ -83,9 +83,16 @@ export default function LoginPage() {
 
   }
 
-  const handleSocialLogin = (provider: 'google' | 'naver') => {
-    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?target=/main`;
+  // const handleSocialLogin = (provider: 'google' | 'naver') => {
+  //   window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?target=/main`;
+
+  // };
+
+  const handleSocialLogin = async (provider: 'google' | 'naver') => {
+    const returnUrl = `${window.location.origin}/main`;
+    document.cookie = `return_to=${returnUrl}; path=/; max-age=300;`;
     
+    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}`;
   };
 
   useEffect(() => {
