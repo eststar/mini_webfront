@@ -64,8 +64,8 @@ export default function Page() {
                     {/* 사이트 설명 */}
                     <div className=" text-[14px] md:text-lg text-zinc-300/90 font-light leading-relaxed break-keep">
                         <p>
-                            즐거운 제주도 여행 속에서 예기치 못한 생리적 위기에 처했다면 잘 찾아오셨습니다. <br/>
-                            PEECEMAKER와 함께 당신을 위기에서 구원해줄 은밀하고 위대한 작전을 계획해보십시오.
+                            제주도 여행을 즐기던 도중 예고없이 찾아오는 생리적 위협에 대응하십시오. <br/>
+                            PEECEMAKER와 함께 당신을 사회적 사망 위기에서 구원해줄 은밀하고 위대한 작전을 계획해보십시오.
                         </p>
                         <div className='grid md:grid-cols-3 gap-8 md:gap-12 mt-5 text-center justify-center'>
                             <div className='w-60'><h1 className='font-extrabold text-[24px]'>MAP</h1> 지도와 GPS를 활용해 주변의 화장실 위치, 정보, 리뷰를 제공합니다.</div>

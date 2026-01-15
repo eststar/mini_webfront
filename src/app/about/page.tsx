@@ -106,9 +106,9 @@ export default function AboutPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
-                            { icon: <FaMapMarkedAlt />, title: "Toilet Map", desc: "핵심 서비스. 카카오 맵을 통해 주변의 화장실에 대한 정보와 위치를 제공합니다." },
-                            { icon: <FaChartPie />, title: "Toilet Chart", desc: "차트를 통해 화장실에 대한 여러 통계를 제공합니다." },
-                            { icon: <FaClipboardList />, title: "Toilet Board", desc: "사용자들이 정보나 대화를 나눌 수 있는 공간을 제공합니다." }
+                            { icon: <FaMapMarkedAlt />, title: "Toilet Map", desc: "핵심 서비스. 카카오 맵 API를 활용해 지도상 주변의 화장실에 대한 정보와 위치를 제공합니다." },
+                            { icon: <FaChartPie />, title: "Toilet Chart", desc: "Recharts 라이브러리를 활용해 시각화된 차트를 통해 화장실에 대한 여러 통계들을 제공합니다." },
+                            { icon: <FaClipboardList />, title: "Toilet Board", desc: "사용자들이 정보나 대화를 나눌 수 있는 커뮤니티 공간을 제공합니다." }
                         ].map((page, idx) => (
 
                             <motion.div
@@ -193,6 +193,10 @@ export default function AboutPage() {
 
 
                 <section className="py-20">
+                    <motion.div variants={itemVariants} className="flex flex-col items-center text-center space-y-4 mb-16">
+                        <h3 className="text-sm font-black tracking-[0.5em] text-orange-400 uppercase">KDT-03</h3>
+                        <h2 className="text-5xl font-[1000] tracking-tighter text-white leading-none uppercase">Development Team</h2>
+                    </motion.div>
                     <motion.div
                         variants={itemVariants}
                         className="grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden"

@@ -1,8 +1,8 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
 import { Map, CustomOverlayMap, MarkerClusterer, useKakaoLoader } from "react-kakao-maps-sdk";
-import { useState, useEffect } from "react";
-import { FaMale, FaFemale, FaWheelchair, FaBaby, FaTimes } from "react-icons/fa";
+import { useState, useEffect, useMemo } from "react";
+import { FaMale, FaFemale, FaWheelchair, FaBaby, FaTimes, FaToilet, FaShieldAlt, FaLayerGroup, FaFilter } from "react-icons/fa";
 import { FaPersonWalking } from "react-icons/fa6";
 import { MdGpsFixed } from "react-icons/md";
 import { MdBabyChangingStation } from "react-icons/md";
@@ -24,6 +24,9 @@ interface Toilet {
     lnmAdres?: string;
     opnTimeInfo?: string;
     telno?: string;
+    emgncBellInstlYn?: string;
+    toiletEntrncCctvInstlYn?: string;
+
 }
 
 let cachedToilets: Toilet[] = [];
@@ -34,7 +37,7 @@ interface MapViewProps {
     userData?: any;
 }
 
-export default function MapView({ Pos,  userData }: MapViewProps) {
+export default function MapView({ Pos, userData }: MapViewProps) {
     const [loading] = useKakaoLoader({
         appkey: process.env.NEXT_PUBLIC_KAKAO_MAP_KEY as string,
         libraries: ["services", "clusterer"],
@@ -43,9 +46,16 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
     const [toilets, setToilets] = useState<Toilet[]>(cachedToilets);
     const [level, setLevel] = useState(3);
     const [map, setMap] = useState<kakao.maps.Map | null>(null);
-    const { theme, resolvedTheme } = useTheme();
+    const { resolvedTheme } = useTheme();
 
     const [selectedToilet, setSelectedToilet] = useState<Toilet | null>(null);
+
+    //필터
+    const [mainFilter, setMainFilter] = useState<'all' | 'secure' | 'accessible' | 'family'>('all');
+    const [hasMale, setHasMale] = useState(false);
+    const [hasFemale, setHasFemale] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
 
     const Spinner = () => (
         <motion.div
@@ -83,6 +93,25 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
 
 
 
+    const filteredToilets = useMemo(() => {
+        return toilets.filter(t => {
+
+            const matchesMain =
+                mainFilter === 'all' ||
+                (mainFilter === 'secure' && (t.emgncBellInstlYn === 'Y' || t.toiletEntrncCctvInstlYn === 'Y')) ||
+                (mainFilter === 'accessible' && (Number(t.maleDspsnClosetCnt) > 0 || Number(t.femaleDspsnClosetCnt) > 0)) ||
+                (mainFilter === 'family' && t.diaperExhgTablYn === 'Y');
+
+
+            const matchesMale = !hasMale || (Number(t.maleClosetCnt) > 0 || Number(t.maleUrinalCnt) > 0);
+            const matchesFemale = !hasFemale || (Number(t.femaleClosetCnt) > 0);
+
+            return matchesMain && matchesMale && matchesFemale;
+        });
+    }, [toilets, mainFilter, hasMale, hasFemale]);
+
+
+
 
     if (loading) return (
         <div className="flex h-full items-center justify-center font-black text-orange-400 animate-pulse text-2xl tracking-widest bg-white/10 backdrop-blur-md">
@@ -93,6 +122,91 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
 
     return (
         <div className="w-full h-full relative">
+
+            <div className="absolute top-30 left-8 z-100 flex flex-col gap-3 items-start pointer-events-none">
+                
+                <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    className="pointer-events-auto flex items-center gap-3 px-5 py-3 bg-white/50 backdrop-blur-2xl border border-white/60 rounded-4xl shadow-[0_10px_30px_rgba(0,0,0,0.1)] transition-all hover:bg-white/80 group dark:bg-zinc-600/40 dark:border-zinc-400/10 dark:hover:bg-zinc-500/40"
+                >
+                    <div className={`rounded-lg transition-colors ${isFilterOpen ? ' text-orange-400' : ' text-slate-500 '}`}>
+                        <FaFilter />
+                    </div>
+                    <span className=" font-[1000] text-slate-700 dark:text-white uppercase tracking-[0.15em]">
+                        Filter
+                    </span>
+                </motion.button>
+
+                {/* 필터 메뉴 */}
+                <AnimatePresence>
+                    {isFilterOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className="pointer-events-auto w-72 bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[2.5rem] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.2)] p-7 flex flex-col gap-8 dark:bg-zinc-600/40 dark:border-zinc-400/10"
+                        >
+                            {/* 시설 필터 섹션 */}
+                            <div className="flex flex-col gap-4">
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Facility Type</span>
+                                    {mainFilter !== 'all' && (
+                                        <button onClick={() => setMainFilter('all')} className="text-[10px] font-bold text-slate-400 hover:text-orange-400">Reset</button>
+                                    )}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2.5">
+                                    {[
+                                        { id: 'all', label: '전체', icon: <FaToilet /> },
+                                        { id: 'secure', label: '안심시설', icon: <FaShieldAlt /> },
+                                        { id: 'accessible', label: '장애인용', icon: <FaWheelchair /> },
+                                        { id: 'family', label: '유아동반', icon: <MdBabyChangingStation /> },
+                                    ].map((item) => (
+                                        <button
+                                            key={item.id}
+                                            onClick={() => setMainFilter(item.id as any)}
+                                            className={`flex flex-col items-center justify-center py-4 rounded-3xl border transition-all ${mainFilter === item.id
+                                                ? 'bg-orange-400 border-orange-300 text-white shadow-lg shadow-orange-400/20'
+                                                : 'bg-white/40 border-transparent text-slate-500 hover:bg-white/60 dark:bg-zinc-900/70 dark:text-slate-400 dark:hover:bg-zinc-600'
+                                                }`}
+                                        >
+                                            <span className="text-xl mb-1.5">{item.icon}</span>
+                                            <span className="text-[10px] font-black">{item.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 성별 유무*/}
+                            <div className="flex flex-col gap-4">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Gender Availability</span>
+                                <div className="flex gap-2.5">
+                                    {[
+                                        { state: hasMale, setter: setHasMale, icon: <FaMale />, label: '남성용', color: 'bg-cyan-500' },
+                                        { state: hasFemale, setter: setHasFemale, icon: <FaFemale />, label: '여성용', color: 'bg-rose-500' }
+                                    ].map((gen, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => gen.setter(!gen.state)}
+                                            className={`flex-1 flex items-center justify-center gap-2.5 py-4 rounded-3xl border transition-all font-black text-[11px] ${gen.state
+                                                ? `${gen.color} border-white/20 text-white shadow-lg`
+                                                : 'bg-white/40 border-transparent text-slate-400 dark:bg-zinc-900/70'
+                                                }`}
+                                        >
+                                            <span className="text-sm">{gen.icon}</span> {gen.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+
+
+
+
             <Map
                 center={Pos}
                 style={{ width: "100%", height: "100%", filter: resolvedTheme === 'dark' ? 'invert(100%) hue-rotate(180deg)' : 'none' }}
@@ -120,7 +234,7 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
 
                 {toilets.length > 0 && (
                     <MarkerClusterer
-
+                        key={`${mainFilter}-${hasMale}-${hasFemale}`}
                         averageCenter={true}
                         minLevel={3}
                         styles={[
@@ -134,11 +248,11 @@ export default function MapView({ Pos,  userData }: MapViewProps) {
                                 fontWeight: '1000',
                                 lineHeight: '60px',
                                 fontSize: '18px',
-                                
+
                             }
                         ]}
                     >
-                        {toilets.map((toilet, index) => (
+                        {filteredToilets.map((toilet, index) => (
                             <CustomOverlayMap
                                 key={toilet.dataCd}
                                 position={{ lat: toilet.laCrdnt, lng: toilet.loCrdnt }}
