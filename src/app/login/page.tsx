@@ -47,7 +47,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      alert("제대로 입력하세요")
+      alert("제대로 입력하세요(이메일, 비밀번호)")
       return;
     }
 
@@ -72,6 +72,7 @@ export default function LoginPage() {
       }
       else {
         const errorData = await response.json().catch(() => ({}));
+        console.log(errorData)
         alert(`로그인 실패(서버 문제)`);
       }
     } catch (error) {
@@ -92,11 +93,11 @@ export default function LoginPage() {
     const returnUrl = encodeURIComponent(`${window.location.origin}/main`);
 
     
-    document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
+    // document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
 
     
-    // window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl}`
-    window.location.href = `/back/oauth2/authorization/${provider}?target=${returnUrl}`
+    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl}`
+    // window.location.href = `/back/oauth2/authorization/${provider}?target=${returnUrl}`
   };
 
 
