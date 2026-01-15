@@ -96,7 +96,7 @@ export default function LoginPage() {
     // document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
 
     
-    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?state=${returnUrl}`
+    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?target=${returnUrl}`
     // window.location.href = `/back/oauth2/authorization/${provider}?target=${returnUrl}`
   };
 
