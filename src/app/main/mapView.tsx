@@ -83,6 +83,7 @@ export default function MapView({ Pos, userData }: MapViewProps) {
                     headers: {
                         "ngrok-skip-browser-warning": "69420", 
                     },
+                    credentials: "include"
                 });
                 const data = await response.json();
 
@@ -97,7 +98,7 @@ export default function MapView({ Pos, userData }: MapViewProps) {
     }, []);
 
 
-
+    // 필터
     const filteredToilets = useMemo(() => {
         return toilets.filter(t => {
 

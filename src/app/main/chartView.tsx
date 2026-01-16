@@ -43,6 +43,7 @@ export default function ChartView() {
                     headers: {
                         "ngrok-skip-browser-warning": "69420", 
                     },
+                    credentials: "include"
                 });
                 const data = await response.json();
 
@@ -56,6 +57,7 @@ export default function ChartView() {
                     headers: {
                         "ngrok-skip-browser-warning": "69420", 
                     },
+                    credentials: "include"
                 });
                 const reviewData = await reviewRes.json();
 

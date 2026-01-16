@@ -99,6 +99,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
                     content: comment,
                     point: rating
                 }),
+                credentials: "include"
             });
             if (response.ok) {
                 setComment("");

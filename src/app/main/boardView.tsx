@@ -37,6 +37,7 @@ export default function BoardView({ userData }: BoardViewProps) {
                 headers: {
                     "ngrok-skip-browser-warning": "69420",
                 },
+                credentials: "include"
             });
             const boardRes = await response.json();
 

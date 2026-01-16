@@ -72,7 +72,8 @@ export default function MainPage() {
                     const data = await res.json();
                     setUserData(data);
                     setIsLoggedIn(true);
-                    console.log("✅ 인증 성공:", data);
+                    localStorage.setItem("user_nickname", data.nickname);
+                    console.log("✅ 인증 성공:");
                     console.log(data);
                 } else {
 
@@ -164,6 +165,7 @@ export default function MainPage() {
                     setIsLoggedIn(false);
                     setUserData({});
                     setIsMenuOpen(false);
+                    localStorage.removeItem("user_nickname");
                     console.log("로그아웃 성공")
                     localStorage.removeItem("activeTab");
                     

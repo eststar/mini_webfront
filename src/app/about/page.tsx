@@ -209,7 +209,6 @@ export default function AboutPage() {
                                 <div className="flex items-center gap-4 text-orange-400">
                                     <FaLayerGroup size={32} /><span className="font-black tracking-widest text-3xl uppercase">Front-end Developer</span>
                                 </div>
-                                <h2 className="text-5xl md:text-7xl font-[1000] text-white leading-none tracking-tighter">윤치형</h2>
                                 <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-l-4 border-orange-400 pl-4">"여기에 소감 입력."</p>
                                 <div className="pt-10 space-y-4">
                                     <h4 className="flex items-center gap-2 font-black text-orange-400 tracking-widest uppercase text-2xl "><FaCode /> Technical Spec</h4>
@@ -254,7 +253,6 @@ export default function AboutPage() {
                                 <div className="flex items-center gap-4 text-orange-400">
                                     <span className="font-black tracking-widest text-3xl uppercase">Back-end Developer</span><FaServer size={32} />
                                 </div>
-                                <h2 className="text-5xl md:text-7xl font-[1000] text-white leading-none tracking-tighter">이동규</h2>
                                 <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-r-4 border-orange-400 pr-4 md:border-l-0">"여기에 소감 입력."</p>
                                 <div className="pt-10 space-y-4 w-full">
                                     <h4 className="flex items-center justify-end gap-2 font-black text-orange-400 tracking-widest uppercase text-2xl">Technical Spec <FaTerminal /></h4>
@@ -300,6 +298,8 @@ export default function AboutPage() {
                         </div>
                     </motion.div>
                 </section>
+
+                
 
                 <footer className="pt-40 pb-20 text-center">
                     <motion.div
