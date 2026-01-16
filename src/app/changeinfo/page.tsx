@@ -15,7 +15,7 @@ export default function ChangeInfoPage() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [originNickname, setOriginNickname] = useState("");
-
+  const next_backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
   const Spinner = () => (
     <motion.div
       animate={{ rotate: 360 }}
@@ -91,11 +91,11 @@ export default function ChangeInfoPage() {
     const updateData = {
       nickname: finalNickname,
       password: password,
-      newPassword: newPassword || "" 
+      newPassword: newPassword || ""
     };
 
     try {
-      const response = await fetch("/back/api/members/update", {
+      const response = await fetch(`${next_backend_url}api/members/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -123,14 +123,14 @@ export default function ChangeInfoPage() {
 
 
   const handleDeleteAccount = async () => {
-    if (!confirm("정말로 탈퇴하시겠습니까? 바지 버려도 모릅니다.")) return;
+    if (!confirm("정말로 탈퇴하시겠습니까? 바지에 지려도 모릅니다.")) return;
 
     const currentPass = prompt("비밀번호를 입력해주세요.");
     if (!currentPass) return;
 
     setIsLoading(true);
     try {
-      const response = await fetch("/back/api/members/signout", {
+      const response = await fetch(`${next_backend_url}api/members/signout`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

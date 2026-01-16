@@ -3,7 +3,7 @@ import { motion, Variants, useScroll, useTransform } from "framer-motion";
 import { FaMapMarkedAlt, FaClipboardList, FaChartPie, FaCode, FaTerminal, FaLayerGroup, FaServer, FaChevronLeft, FaMapMarkerAlt, FaDatabase, FaExternalLinkAlt } from "react-icons/fa";
 import { useRef } from "react";
 import { SiGoogle, SiNaver, SiNextdotjs, SiSpring, SiSpringboot } from "react-icons/si";
-import { RiSupabaseFill, RiTailwindCssFill } from "react-icons/ri";
+import { RiTailwindCssFill } from "react-icons/ri";
 import { VscVscode } from "react-icons/vsc";
 import { useRouter } from "next/navigation";
 import { BiLogoPostgresql } from "react-icons/bi";

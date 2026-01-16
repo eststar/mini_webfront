@@ -10,7 +10,7 @@ import BoardView from "./boardView"
 import ChartView from "./chartView";
 import { IoMdSettings } from "react-icons/io";
 import { MdComputer, MdDarkMode, MdLightMode } from "react-icons/md";
-
+const NEXT_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 interface UserData {
     nickname?: string;
     role?: string;
@@ -59,7 +59,7 @@ export default function MainPage() {
 
         const checkAuth = async () => {
             try {
-                const res = await fetch("/back/api/members/myinfo", {
+                const res = await fetch(`${NEXT_BACKEND_URL}api/members/myinfo`, {
                     method: "GET",
                     headers: {
                         "ngrok-skip-browser-warning": "69420",
@@ -87,7 +87,17 @@ export default function MainPage() {
         checkAuth();
     }, []);
 
-
+    useEffect(() => {
+        const justLoggedIn = localStorage.getItem("just_logged_in");
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("loginSuccess") === "true") {
+            window.history.replaceState({}, "", window.location.pathname);
+        }
+        if (justLoggedIn === "true") {
+            localStorage.removeItem("just_logged_in");
+            window.location.reload();
+        }
+    }, []);
 
     useEffect(() => {
         if (isClient) {
@@ -151,7 +161,7 @@ export default function MainPage() {
 
             try {
 
-                const res = await fetch("/back/logout", {
+                const res = await fetch(`${NEXT_BACKEND_URL}logout`, {
                     method: "POST",
                     headers: {
                         "ngrok-skip-browser-warning": "69420",
@@ -161,22 +171,23 @@ export default function MainPage() {
 
                 if (res.ok) {
 
-                   
+                    localStorage.clear();
                     setIsLoggedIn(false);
                     setUserData({});
                     setIsMenuOpen(false);
                     localStorage.removeItem("user_nickname");
                     console.log("로그아웃 성공")
                     localStorage.removeItem("activeTab");
-                    
-                    
-                    window.location.replace("/main");
+
+
+                    window.location.href = "/main";
                 } else {
                     alert("로그아웃 실패: 서버 응답 에러");
                 }
             } catch (err) {
                 console.error("🚨 로그아웃 통신 실패:", err);
                 alert("로그아웃 중 오류가 발생했습니다.");
+                localStorage.clear();
             }
         }
     };

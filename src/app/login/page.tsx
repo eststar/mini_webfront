@@ -56,7 +56,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/back/login", {
+      const response = await fetch(`${NEXT_BACKEND_URL}login`, {
         method: "POST",
         headers: {
           "ngrok-skip-browser-warning": "69420",
@@ -94,7 +94,7 @@ export default function LoginPage() {
   const handleSocialLogin = (provider: 'google' | 'naver') => {
     const returnUrl = encodeURIComponent(`${window.location.origin}/main`);
 
-    
+    localStorage.setItem("just_logged_in", "true");  
     // document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
 
     

@@ -25,6 +25,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const isEditMode = mode === 'edit';
+    const next_backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 
     useEffect(() => {
@@ -41,7 +42,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
             return;
         }
         try {
-            const url = isEditMode ? "/back/api/test/board/putboard" : "/back/api/test/board/postboard";
+            const url = isEditMode ? `${next_backend_url}api/test/board/putboard` : `${next_backend_url}api/test/board/postboard`;
             const method = isEditMode ? "PUT" : "POST";
 
             const response = await fetch(url, {
@@ -56,6 +57,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
             });
 
             if (response.ok) {
+                console.log("현재 작성 중인 유저 정보:", userData);
                 alert(isEditMode ? "수정 완료" : "등록 완료");
                 onSuccess(); 
             } else {
