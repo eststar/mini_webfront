@@ -145,7 +145,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
         if (!confirm("리뷰를 삭제하시겠습니까?")) return;
 
         try {
-            const response = await fetch(`${next_backend_url}api/test/review/deletereview?reviewId=${reviewId}`, {
+            const response = await fetch(`${next_backend_url}api/test/review/deletereview/${reviewId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
