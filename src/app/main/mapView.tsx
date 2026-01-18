@@ -129,7 +129,7 @@ export default function MapView({ Pos, userData }: MapViewProps) {
     return (
         <div className="w-full h-full relative">
 
-            <div className="absolute top-30 left-8 z-100 flex flex-col gap-3 items-start pointer-events-none">
+            <div className="absolute top-20 left-4 md:top-30 md:left-8  z-50 flex flex-col gap-3 items-start pointer-events-none">
 
                 <motion.button
                     whileTap={{ scale: 0.95 }}
@@ -328,7 +328,7 @@ export default function MapView({ Pos, userData }: MapViewProps) {
                 )}
             </AnimatePresence>
 
-            <div className="absolute bottom-8 md:right-10 right-2 z-50">
+            <div className="absolute bottom-30 md:bottom-8 md:right-10 right-2 z-50">
                 <button
                     onClick={() => {
                         if (!map) return;

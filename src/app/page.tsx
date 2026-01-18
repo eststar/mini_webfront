@@ -83,7 +83,7 @@ export default function Page() {
                         <div className="text-[14px] md:text-lg text-zinc-300/90 font-light leading-relaxed break-keep">
                             <p>
                                 제주도에서 신나는 여행을 즐기고 계신다 하더라도 당신에게 찾아올 생리적 위협은 이를 고려해주지 않습니다. <br />
-                                PEECEMAKER와 함께 당신을 사회적 사망 위기에서 구원해줄 은밀하고 위대한 작전을 계획해보십시오.
+                                PEECEMAKER와 함께 당신이 평생 지켜온 사회적 지위를 수호할 은밀하고 위대한 작전을 계획해보십시오.
                             </p>
                         </div>
                     </motion.div>
@@ -101,7 +101,7 @@ export default function Page() {
 
                 </motion.div>
 
-                <div
+                <motion.div variants={itemVars}
                     className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 cursor-pointer group"
                     onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
                 >
@@ -118,11 +118,11 @@ export default function Page() {
                         className="flex flex-col items-center gap-2"
                     >
                         <span className="text-white text-[11px] md:text-[13px] font-bold tracking-[1.2em] uppercase ml-[1.2em] whitespace-nowrap  transition-colors duration-500">
-                            Scroll down to detail
+                            DOWN TO DETAIL
                         </span>
 
                     </motion.div>
-                </div>
+                </motion.div>
 
             </section>
 
@@ -135,9 +135,9 @@ export default function Page() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
-                            { icon: <FaMapMarkedAlt />, title: "Toilet Map", desc: "핵심 서비스. 카카오 맵 API를 활용해 지도상 주변의 화장실에 대한 정보와 위치를 제공합니다." },
-                            { icon: <FaChartPie />, title: "Toilet Chart", desc: "Recharts 라이브러리를 활용해 시각화된 차트를 통해 화장실에 대한 여러 통계들을 제공합니다." },
-                            { icon: <FaClipboardList />, title: "Toilet Board", desc: "사용자들이 정보나 대화를 나눌 수 있는 커뮤니티 공간을 제공합니다." }
+                            { icon: <FaMapMarkedAlt />, title: "Toilet Map", desc: "카카오 맵 API를 통해 주변의 지도를 화면에 띄우고 주변의 화장실에 대한 정보와 위치를 가져와 마커로 띄워 보여줍니다. 마커를 클릭시 해당 화장실에 대한 상세 정보와 사용자들이 남긴 리뷰를 볼 수 있으며 리뷰 작성과 화장실 특성에 따른 필터링 기능이 제공됩니다." },
+                            { icon: <FaChartPie />, title: "Toilet Chart", desc: "Recharts 라이브러리를 활용해 시각화된 차트를 통해 화장실에 대한 여러 각종 통계들을 제공합니다. 통계로는 화장실이 많은 지역 순위, 남녀별 화장실 칸수, 리뷰 점수 상위 5등과 하위 5등을 볼 수 있습니다." },
+                            { icon: <FaClipboardList />, title: "Toilet Board", desc: "사용자들이 정보나 대화를 나눌 수 있는 커뮤니티 공간을 제공합니다. 글과 댓글을 작성할 수 있으며 수정 및 삭제도 가능합니다." }
                         ].map((page, idx) => (
                             <motion.div
                                 key={idx}
