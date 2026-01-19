@@ -223,7 +223,7 @@ export default function Page() {
                         initial="initial"
                         whileInView="animate"
                         viewport={{ once: true, amount: 0.2 }}
-                        className="grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden backdrop-blur-3xl"
+                        className="grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden backdrop-blur-3xl md:rounded-[3rem]"
                     >
                         <motion.div className="bg-white/10 hover:bg-white/15 transition-colors  p-10 md:p-16 flex flex-col justify-between border border-white/10 shadow-2xl rounded-t-[3rem] md:rounded-tr-none md:rounded-l-[3rem] group/card">
                             <div className="space-y-8">
