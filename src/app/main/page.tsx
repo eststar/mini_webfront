@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {useRouter} from 'next/navigation';
 import {FaMapMarkedAlt, FaClipboardList, FaChartPie} from 'react-icons/fa';
@@ -32,7 +32,7 @@ export default function MainPage () {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const {theme, setTheme, resolvedTheme} = useTheme();
 	const [mounted, setMounted] = useState(false);
-
+	const menuRef = useRef<HTMLDivElement>(null);
 	const [isRealLocation, setIsRealLocation] = useState(() => {
 		if (typeof window !== 'undefined') {
 			const saved = localStorage.getItem('isRealLocation');
@@ -97,6 +97,20 @@ export default function MainPage () {
 			window.location.reload();
 		}
 	}, []);
+
+	useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setIsMenuOpen(false); 
+        }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+}, [isMenuOpen]);
 
 	useEffect(() => {
 		if (isClient) {
@@ -208,7 +222,7 @@ export default function MainPage () {
 					</div>
 				</div>
 
-				<div className='relative pointer-events-auto flex flex-col items-end'>
+				<div ref={menuRef} className='relative pointer-events-auto flex flex-col items-end'>
 					<button onClick={() => setIsMenuOpen(!isMenuOpen)} className='group relative px-6 py-3 md:px-10 md:py-5 bg-orange-400/85 backdrop-blur-md text-white font-[950] md:text-base tracking-widest uppercase rounded-full md:rounded-[40px] border border-white/20 shadow-lg hover:bg-orange-400/85 active:scale-95 transition-all cursor-pointer overflow-hidden flex flex-row justify-center items-center'>
 						{isLoggedIn && <p className='mr-3 text-2xl'>{userData?.nickname}</p>}
 						<IoMdSettings className='text-3xl' />

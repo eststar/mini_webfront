@@ -238,7 +238,7 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
                 <section className="space-y-6 pb-10">
                     <h3 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3">
                         COMMENTS
-                        <span className="text-orange-500 bg-orange-100 dark:bg-zinc-500/30 px-3 py-1 rounded-full text-sm">
+                        <span className="text-orange-400 bg-orange-100 dark:bg-zinc-500/30 px-3 py-1 rounded-full text-sm">
                             {comment.length}
                         </span>
                     </h3>

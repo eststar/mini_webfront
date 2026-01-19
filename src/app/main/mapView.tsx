@@ -171,8 +171,8 @@ export default function MapView({ Pos, userData }: MapViewProps) {
                                         <button
                                             key={item.id}
                                             onClick={() => setMainFilter(item.id as any)}
-                                            className={`flex flex-col items-center justify-center py-4 rounded-3xl border transition-all ${mainFilter === item.id
-                                                ? 'bg-orange-400 border-orange-300 text-white shadow-lg shadow-orange-400/20'
+                                            className={`flex flex-col items-center justify-center py-4 rounded-3xl transition-all ${mainFilter === item.id
+                                                ? 'bg-orange-400 text-white shadow-lg shadow-orange-400/20'
                                                 : 'bg-white/40 border-transparent text-slate-500 hover:bg-white/60 dark:bg-zinc-900/70 dark:text-slate-400 dark:hover:bg-zinc-600'
                                                 }`}
                                         >
@@ -278,7 +278,7 @@ export default function MapView({ Pos, userData }: MapViewProps) {
                                 >
                                     {(level <= 5) && (
                                         <div className="relative flex flex-col items-center px-2 py-1.5 rounded-3xl bg-white/90 backdrop-blur-4xl shadow-[0_20px_40px_rgba(0,0,0,0.1)] border border-white/70 group-hover:border-orange-400/50 group-hover:shadow-orange-200/50 group-hover:scale-115 transition-all duration-300 z-20 mb-1 dark:bg-zinc-700/90 dark:border-zinc-400/10 ">
-                                            <span className="text-[14px] font-[1000] text-slate-900 dark:text-white **:tracking-tight mb-2 max-w-37 truncate">
+                                            <span className="text-[14px] font-[1000] text-slate-900 dark:text-white **:tracking-tight  mb-2 max-w-37 truncate">
                                                 {toilet.toiletNm}
                                             </span>
                                             <div className="flex gap-1.5 items-center pt-2 border-t border-white/80 dark:border-white/20 w-full justify-center">

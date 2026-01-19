@@ -1,21 +1,20 @@
 "use client";
 
-import { motion, useScroll, useSpring, useTransform, Variants } from 'framer-motion';
+import { motion, useScroll, Variants } from 'framer-motion';
 import React, { useRef } from 'react';
 import { useRouter } from "next/navigation";
 import {
     FaMapMarkedAlt, FaClipboardList, FaChartPie, FaCode, FaTerminal,
-    FaLayerGroup, FaServer, FaMapMarkerAlt, FaDatabase, FaExternalLinkAlt
+    FaMapMarkerAlt, FaExternalLinkAlt, FaGithub
 } from "react-icons/fa";
 import { SiGoogle, SiNaver, SiNextdotjs, SiSpring, SiSpringboot } from "react-icons/si";
 import { RiTailwindCssFill } from "react-icons/ri";
 import { VscVscode } from "react-icons/vsc";
 import { BiLogoPostgresql } from "react-icons/bi";
 
-
 export default function Page() {
     const router = useRouter();
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLElement>(null);
 
     const containerVars = {
         initial: { opacity: 0 },
@@ -36,11 +35,10 @@ export default function Page() {
 
     const { scrollYProgress } = useScroll();
 
-
     return (
         <main ref={containerRef} className="relative w-full bg-black flex flex-col items-center justify-center overflow-x-hidden">
             <motion.div
-                className="fixed top-0 left-0 right-0 h-1 bg-orange-400 origin-left z-9999"
+                className="fixed top-0 left-0 right-0 h-1 bg-orange-400 origin-left z-[9999]"
                 style={{ scaleX: scrollYProgress }}
             />
 
@@ -52,83 +50,76 @@ export default function Page() {
                 >
                     <source src="/jeju.mp4" type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/80" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80" />
             </div>
 
-
-
-            <section className="relative z-20 h-screen flex items-center justify-center">
+            <section className="relative z-20 min-h-screen w-full flex items-center justify-center">
                 <motion.div
                     variants={containerVars}
                     initial="initial"
-                    animate="animate"
-                    className="relative z-20 flex flex-col items-center text-center px-4 w-full py-16 md:py-0"
+                    whileInView="animate"
+                    viewport={{ once: true }}
+                    className="relative z-20 flex flex-col justify-center items-center text-center px-4 w-full min-h-screen py-20"
                 >
-                    <motion.h1
-                        variants={itemVars}
-                        className="text-[12vw] md:text-[8vw] font-[1000] tracking-widest uppercase leading-none text-orange-400/95"
-                    >
-                        PEECE<span className="text-white/95">MAKER</span>
-                    </motion.h1>
+                    <div className="flex flex-col items-center my-auto">
+                        <motion.h1
+                            variants={itemVars}
+                            className="text-[12vw] md:text-[8vw] font-[1000] tracking-widest uppercase leading-none text-orange-400/95"
+                        >
+                            PEECE<span className="text-white/95">MAKER</span>
+                        </motion.h1>
 
-                    <motion.div
-                        variants={itemVars}
-                        className="w-24 h-1 bg-transparent my-6 md:my-4"
-                    />
+                        <motion.div variants={itemVars} className="w-24 h-1 bg-transparent my-6 md:my-4" />
 
-                    <motion.div variants={itemVars} className="space-y-6">
-                        <p className="text-2xl md:text-4xl font-black tracking-tight text-white uppercase">
-                            THE GUARDIAN OF YOUR PRESTIGE
-                        </p>
-                        <div className="text-[14px] md:text-lg text-zinc-300/90 font-light leading-relaxed break-keep">
-                            <p>
-                                제주도에서 신나는 여행을 즐기고 계신다 하더라도 당신에게 찾아올 생리적 위협은 이를 고려해주지 않습니다. <br />
-                                PEECEMAKER와 함께 당신이 평생 지켜온 사회적 지위를 수호할 은밀하고 위대한 작전을 계획해보십시오.
+                        <motion.div variants={itemVars} className="space-y-6">
+                            <p className="text-2xl md:text-4xl font-black tracking-tight text-white uppercase">
+                                THE GUARDIAN OF YOUR PRESTIGE
                             </p>
-                        </div>
-                    </motion.div>
+                            <div className="text-[14px] md:text-lg text-zinc-300/90 font-light leading-relaxed break-keep">
+                                <p>
+                                    제주도에서 신나는 여행을 즐기고 계신다 하더라도 당신에게 찾아올 생리적 위협은 이를 고려해주지 않습니다. <br />
+                                    PEECEMAKER와 함께 당신이 평생 지켜온 사회적 지위를 수호할 은밀하고 위대한 작전을 계획해보십시오.
+                                </p>
+                            </div>
+                        </motion.div>
 
-                    <motion.button
+                        <motion.button
+                            variants={itemVars}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => router.push('/main')}
+                            className="mt-12 px-10 md:px-24 py-5 md:py-6 bg-white/20 backdrop-blur-2xl text-white border border-white/20 text-sm md:text-lg rounded-full hover:text-orange-400 transition-colors cursor-pointer font-[950] tracking-[0.2em] md:tracking-[0.5em] uppercase"
+                        >
+                            EXPLORE YOUR HEAVEN
+                        </motion.button>
+                    </div>
+
+                    <motion.div 
                         variants={itemVars}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => router.push('/main')}
-                        className="mt-12 px-10 md:px-24 py-5 md:py-6 bg-white/20 backdrop-blur-2xl text-white border border-white/20 text-sm md:text-lg rounded-full hover:text-orange-400 transition-colors cursor-pointer font-[950] tracking-[0.2em] md:tracking-[0.5em] uppercase"
+                        className="cursor-pointer group mt-auto pt-10"
+                        onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
                     >
-                        EXPLORE YOUR HEAVEN
-                    </motion.button>
-
-
-
-                </motion.div>
-
-                <motion.div variants={itemVars}
-                    className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 cursor-pointer group"
-                    onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-                >
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{
-                            opacity: [0.1, 0.5, 0.1],
-                        }}
-                        transition={{
-                            duration: 4,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                        }}
-                        className="flex flex-col items-center gap-2"
-                    >
-                        <span className="text-white text-[11px] md:text-[13px] font-bold tracking-[1.2em] uppercase ml-[1.2em] whitespace-nowrap  transition-colors duration-500">
-                            DOWN TO DETAIL
-                        </span>
-
+                        <motion.div
+                            animate={{ opacity: [0.1, 0.5, 0.1] }}
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            className="flex flex-col items-center gap-3"
+                        >
+                            <span className="text-white text-[11px] md:text-[13px] font-bold tracking-[1.2em] uppercase ml-[1.2em] whitespace-nowrap">
+                                DOWN TO DETAIL
+                            </span>
+                        </motion.div>
                     </motion.div>
                 </motion.div>
-
             </section>
 
             <section className="relative z-20 container mx-auto px-6 max-w-7xl">
                 <section className="space-y-10 py-20">
-                    <motion.div variants={itemVars} className="flex flex-col items-center text-center space-y-4 mb-16">
+                    <motion.div 
+                        variants={itemVars} 
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        className="flex flex-col items-center text-center space-y-4 mb-16"
+                    >
                         <h3 className="text-sm font-black tracking-[0.5em] text-orange-400 uppercase">Architecture</h3>
                         <h2 className="text-5xl font-[1000] tracking-tighter text-white leading-none uppercase">THE KEY FUNCTIONS</h2>
                     </motion.div>
@@ -142,6 +133,9 @@ export default function Page() {
                             <motion.div
                                 key={idx}
                                 variants={itemVars}
+                                initial="initial"
+                                whileInView="animate"
+                                viewport={{ once: true }}
                                 className="bg-white/10 backdrop-blur-2xl border border-white/10 p-10 rounded-[3rem] shadow-xl group hover:bg-white/15 transition-colors"
                             >
                                 <div className="text-3xl text-orange-400 mb-6">{page.icon}</div>
@@ -153,27 +147,32 @@ export default function Page() {
                 </section>
 
                 <section className="py-20">
-                    <motion.div variants={itemVars} className="flex flex-col items-center text-center space-y-4 mb-16">
+                    <motion.div 
+                        variants={itemVars}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        className="flex flex-col items-center text-center space-y-4 mb-16"
+                    >
                         <h3 className="text-sm font-black tracking-[0.5em] text-orange-400 uppercase">Data Source</h3>
                         <h2 className="text-5xl font-[1000] tracking-tighter text-white leading-none uppercase">REGIONAL DATA INTEGRATION</h2>
                     </motion.div>
 
                     <motion.div
                         variants={itemVars}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
                         className="bg-white/10 backdrop-blur-3xl border border-white/10 rounded-[4rem] p-12 md:p-20 shadow-2xl relative overflow-hidden group"
                     >
-
                         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
                             <div className="space-y-8">
-
-
                                 <h3 className="text-4xl md:text-5xl font-[1000] text-white leading-tight tracking-tighter">
-                                    제주특별자치도 제주시 제공<br />
+                                    제주특별자치도<br /> 제주시 제공<br />
                                     <span className="text-orange-400">공중화장실 현황</span> 데이터
                                 </h3>
-
                                 <p className="text-xl text-zinc-100 font-bold leading-relaxed">
-                                    PEECEMAKER는 제주시 내의 모든 공중화장실 위치와 상세 시설 정보를 포함한 공공데이터를 기반으로 합니다. 위도, 경도는 물론 비상벨 설치 여부와 기저귀 교환 탁자 유무까지 분석하여 제주를 찾는 모든 이들에게 진정한 평화를 선사합니다.
+                                    PEECE MAKER는 제주시 내의 모든 공중화장실의 위치와 상세 시설 정보를 포함한 공공데이터를 기반으로 합니다. 위도, 경도를 통한 위치찾기, 화장실 내 시설통계나 비상벨 여부 등 상세 정보를 제공합니다.
                                 </p>
                             </div>
 
@@ -181,13 +180,12 @@ export default function Page() {
                                 <h4 className="text-orange-400 font-black tracking-widest uppercase text-xl flex items-center gap-2">
                                     <FaTerminal /> Dataset Specifications
                                 </h4>
-
                                 <ul className="space-y-4">
                                     {[
                                         { label: "데이터 명칭", value: "제주특별자치도 제주시_공중화장실" },
                                         { label: "제공 기관", value: "제주특별자치도 제주시" },
                                         { label: "출처", value: "공공 데이터 포털" },
-                                        { label: "핵심 컬럼", value: "위경도, 비상벨·CCTV 설치여부, 개방시간" },
+                                        { label: "핵심 컬럼", value: "위도좌표, 경도좌표, 화장실입구CCTV설치여부, 개방시간 등" },
                                     ].map((item, i) => (
                                         <li key={i} className="flex flex-col border-b border-white/5 pb-3">
                                             <span className="text-lg text-orange-400 font-bold tracking-widest">{item.label}</span>
@@ -195,7 +193,6 @@ export default function Page() {
                                         </li>
                                     ))}
                                 </ul>
-
                                 <a
                                     href="https://www.data.go.kr/data/15110521/fileData.do"
                                     target="_blank"
@@ -210,20 +207,30 @@ export default function Page() {
                 </section>
 
                 <section className="py-20">
-                    <motion.div variants={itemVars} className="flex flex-col items-center text-center space-y-4 mb-16">
+                    <motion.div 
+                        variants={itemVars}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        className="flex flex-col items-center text-center space-y-4 mb-16"
+                    >
                         <h3 className="text-sm font-black tracking-[0.5em] text-orange-400 uppercase">KDT-03</h3>
                         <h2 className="text-5xl font-[1000] tracking-tighter text-white leading-none uppercase">Development Team</h2>
                     </motion.div>
 
                     <motion.div
                         variants={itemVars}
-                        className="grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden"
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true, amount: 0.2 }}
+                        className="grid grid-cols-1 md:grid-cols-2 gap-0 overflow-hidden backdrop-blur-3xl"
                     >
-                        {/* 프론트엔드 */}
-                        <div className="bg-white/10 hover:bg-white/15 transition-colors backdrop-blur-3xl p-10 md:p-16 flex flex-col justify-between border border-white/10 shadow-2xl rounded-t-[3rem] md:rounded-tr-none md:rounded-l-[3rem]">
+                        <motion.div className="bg-white/10 hover:bg-white/15 transition-colors  p-10 md:p-16 flex flex-col justify-between border border-white/10 shadow-2xl rounded-t-[3rem] md:rounded-tr-none md:rounded-l-[3rem] group/card">
                             <div className="space-y-8">
                                 <div className="flex items-center gap-4 text-orange-400">
-                                    <FaLayerGroup size={32} />
+                                    <a href="https://github.com/nx2803" target="_blank" rel="noopener noreferrer" className="hover:text-orange-400 text-white transition-colors">
+                                        <FaGithub size={35} />
+                                    </a>
                                     <span className="font-black tracking-widest text-3xl uppercase">Front-end Developer</span>
                                 </div>
                                 <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-l-4 border-orange-400 pl-4">"여기에 소감 입력."</p>
@@ -249,14 +256,15 @@ export default function Page() {
                                     </ul>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        {/* 백엔드 */}
-                        <div className="bg-zinc-900/40 hover:bg-zinc-900/55 transition-colors backdrop-blur-3xl text-white p-10 md:p-16 flex flex-col justify-between border border-white/10 md:border-l-0 shadow-2xl rounded-b-[3rem] md:rounded-bl-none md:rounded-r-[3rem]">
+                        <div className="bg-zinc-900/40 hover:bg-zinc-900/55 transition-colors backdrop-blur-3xl text-white p-10 md:p-16 flex flex-col justify-between border border-white/10 md:border-l-0 shadow-2xl rounded-b-[3rem] md:rounded-bl-none md:rounded-r-[3rem] group/card">
                             <div className="space-y-8 md:items-end md:text-right flex flex-col">
                                 <div className="flex items-center gap-4 text-orange-400">
                                     <span className="font-black tracking-widest text-3xl uppercase">Back-end Developer</span>
-                                    <FaServer size={32} />
+                                    <a href="https://github.com/eststar" target="_blank" rel="noopener noreferrer" className="hover:text-orange-400 text-white transition-colors">
+                                        <FaGithub size={35} />
+                                    </a>
                                 </div>
                                 <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-r-4 border-orange-400 pr-4 md:border-l-0">"여기에 소감 입력."</p>
                                 <div className="pt-10 space-y-4 w-full">
@@ -273,9 +281,9 @@ export default function Page() {
                                         <li className="flex items-center justify-end gap-2">
                                             <span className="mr-1">OAUTH2</span>
                                             <div className="flex items-center gap-1">
-                                                <SiGoogle className="text-blue-400" />
+                                                <a href="https://console.cloud.google.com"><SiGoogle className="text-blue-400" /></a>
                                                 <span className="text-zinc-500">│</span>
-                                                <SiNaver className="text-lime-500" />
+                                                <a href="https://developers.naver.com/main/"><SiNaver className="text-lime-500" /></a>
                                             </div>
                                         </li>
                                         <li className="flex items-center justify-end gap-2">

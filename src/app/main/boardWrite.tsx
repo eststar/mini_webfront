@@ -84,7 +84,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
                 <div className="flex items-center gap-4">
                     <button 
                         onClick={onBack} 
-                        className="p-3 bg-white/50 rounded-2xl hover:bg-white dark:hover:bg-zinc-800 transition-all active:scale-90 dark:bg-zinc-600/30 dark:border-zinc-400/10"
+                        className="p-3 bg-white/50 rounded-2xl hover:bg-white dark:hover:bg-orange-400 transition-all active:scale-90 dark:bg-zinc-600/30 dark:border-zinc-400/10"
                     >
                         <FaArrowLeft className="text-slate-700 dark:text-white" />
                     </button>
@@ -107,7 +107,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             className="w-full bg-white/40 border-2 border-white/20 p-6 rounded-3xl text-xl md:text-2xl font-black outline-none focus:border-orange-400 transition-all dark:bg-zinc-700/30 dark:border-zinc-600/10 dark:text-white "
-                            placeholder="제목"
+                            
                         />
                     </div>
 
@@ -117,8 +117,8 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            className="w-full h-64 md:h-80 bg-white/40 border-2 border-white/20 p-8 rounded-[2.5rem] text-lg font-bold outline-none focus:border-orange-400 transition-all resize-none dark:bg-zinc-700/30 dark:border-zinc-600/10 dark:text-white"
-                            placeholder="내용"
+                            className="w-full h-64 md:h-80 bg-white/40 border-2 border-white/20 p-8 rounded-3xl text-lg font-bold outline-none focus:border-orange-400 transition-all resize-none dark:bg-zinc-700/30 dark:border-zinc-600/10 dark:text-white"
+                            
                         />
                     </div>
                 </div>
@@ -135,7 +135,7 @@ export default function BoardWrite({ onBack, onSuccess, mode = 'write', post, us
                     </button>
                     <button 
                         onClick={handleSubmit}
-                        className="flex-2 p-5 bg-orange-400 text-white rounded-3xl font-[1000] text-lg md:text-xl shadow-[0_20px_40px_-10px_rgba(249,115,22,0.4)] hover:bg-orange-600 hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3"
+                        className="flex-2 p-5 bg-orange-400 text-white rounded-3xl font-[1000] text-lg md:text-xl shadow-[0_20px_40px_-10px_rgba(249,115,22,0.4)] hover:bg-orange-600 active:scale-95 transition-all flex items-center justify-center gap-3"
                     >
                         <FaPaperPlane />
                         <span>{isEditMode ? "UPDATE POST" : "POST NOW"}</span>

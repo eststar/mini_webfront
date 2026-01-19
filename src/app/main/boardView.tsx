@@ -65,14 +65,12 @@ export default function BoardView({ userData }: BoardViewProps) {
         fetchBoardData();
     }, [fetchBoardData]);
 
-
     useEffect(() => {
         if (scrollContainerRef.current) {
             scrollContainerRef.current.scrollTo({ top: 0, behavior: 'auto' });
         }
     }, [currentPage]);
 
-    // 검색 
     const filteredBoard = useMemo(() => {
         return board.filter(post =>
             post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -105,6 +103,14 @@ export default function BoardView({ userData }: BoardViewProps) {
     const handlePostClick = (post: Board) => {
         setSelectedPost(post);
         setViewMode('detail');
+    };
+
+    const handleWriteClick = () => {
+        if (!userData || !userData.nickname) {
+            alert("로그인이 필요한 서비스입니다.");
+            return;
+        }
+        setViewMode('write');
     };
 
     if (!isReady) return null;
@@ -158,7 +164,6 @@ export default function BoardView({ userData }: BoardViewProps) {
                                 </div>
                             </div>
 
-                            {/* 페이지네이션 */}
                             {totalPages > 0 && (
                                 <div className="flex justify-center items-center gap-1 md:gap-2 py-4">
                                     <button disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="w-8 h-8 flex items-center justify-center disabled:opacity-10 hover:text-orange-400 transition-colors"><div className="flex items-center -space-x-1"><FaChevronLeft size={10} /><FaChevronLeft size={10} /></div></button>
@@ -173,20 +178,18 @@ export default function BoardView({ userData }: BoardViewProps) {
                                 </div>
                             )}
 
-                            {/* 검색 및 글쓰기 버튼 */}
-                            <div className="px-6 md:px-10 py-4  flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="px-6 md:px-10 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="relative w-full md:w-72 group">
                                     <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white group-focus-within:text-orange-400 transition-colors " />
                                     <input type="text" placeholder="SEARCH POSTS" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/50 border border-white/60 rounded-2xl py-3 pl-12 pr-4 text-sm font-black focus:outline-none focus:ring-2 focus:ring-orange-400/50 transition-all placeholder:text-slate-400 dark:bg-zinc-600/30 dark:border-zinc-400/10 dark:text-white" />
                                 </div>
-                                <button onClick={() => setViewMode('write')} className="w-full md:w-auto px-8 py-4 bg-orange-400 text-white rounded-2xl md:rounded-3xl flex items-center justify-center gap-3 border border-white/20 hover:bg-orange-500 active:scale-95 transition-all duration-300">
+                                <button onClick={handleWriteClick} className="w-full md:w-auto px-8 py-4 bg-orange-400 text-white rounded-2xl md:rounded-3xl flex items-center justify-center gap-3 border border-white/20 hover:bg-orange-500 active:scale-95 transition-all duration-300">
                                     <FaEdit className="text-xl md:text-2xl" />
                                     <span className="font-[1000] tracking-tighter text-sm md:text-base uppercase">Write</span>
                                 </button>
                             </div>
                         </motion.div>
                     ) : viewMode === 'write' || viewMode === 'edit' ? (
-                        // 쓰기화면
                         <BoardWrite
                             key="write"
                             mode={viewMode}
@@ -199,7 +202,6 @@ export default function BoardView({ userData }: BoardViewProps) {
                             }}
                         />
                     ) : (
-                        // 글 상세
                         selectedPost && (
                             <BoardDetail
                                 key="detail"
