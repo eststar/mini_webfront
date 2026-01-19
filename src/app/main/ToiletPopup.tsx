@@ -58,7 +58,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
     const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
     const [editContent, setEditContent] = useState("");
     const [editRating, setEditRating] = useState(5);
-
+    const next_backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
     const fetchReviews = async () => {
         try {
             const response = await fetch(`/back/api/test/review/getreview?dataCd=${data.dataCd}`, {
@@ -91,7 +91,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
         if (!comment.trim() || isSubmitting) return;
         setIsSubmitting(true);
         try {
-            const response = await fetch('/back/api/test/review/postreview', {
+            const response = await fetch(`${next_backend_url}api/test/review/postreview`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -99,6 +99,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
                     content: comment,
                     point: rating
                 }),
+                credentials: "include"
             });
             if (response.ok) {
                 setComment("");
@@ -115,7 +116,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
     // 리뷰 수정
     const handleUpdateReview = async (reviewId: number) => {
         try {
-            const response = await fetch(`/back/api/test/review/putreview`, {
+            const response = await fetch(`${next_backend_url}api/test/review/putreview`, {
                 method: 'PUT',
                 credentials: "include",
                 headers: { 'Content-Type': 'application/json' },
@@ -144,7 +145,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
         if (!confirm("리뷰를 삭제하시겠습니까?")) return;
 
         try {
-            const response = await fetch(`/back/api/test/review/deletereview?reviewId=${reviewId}`, {
+            const response = await fetch(`${next_backend_url}api/test/review/deletereview/${reviewId}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -199,7 +200,7 @@ export default function ToiletPopup({ data, myPos, onClose, User }: ToiletPopupP
                                 alt="카카오맵"
                                 width={30}
                                 height={30}
-                                className="md:w-8.5 md:h-8.5 rounded-xl"/>
+                                className="md:w-8.5 md:h-8.5 rounded-xl" />
                         </a>
                     </h2>
                 </div>

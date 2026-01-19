@@ -37,11 +37,13 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
     const [comment, setComment] = useState<Comments[]>([]);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editText, setEditText] = useState("");
+    const next_backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+    
     // 댓글 목록 가져오기
     const fetchCommentData = useCallback(async () => {
         try {
-            const response = await fetch(`/back/api/test/comment/${post.boardId}/all`, {
+            const response = await fetch(`${next_backend_url}api/test/comment/${post.boardId}/all`, {
                 method: "GET",
                 headers: {
                     "ngrok-skip-browser-warning": "69420",
@@ -76,14 +78,14 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
         if (!commentText.trim()) return;
 
         try {
-            const targetUrl = `/back/api/test/comment/postcomment`;
+            const targetUrl = `${next_backend_url}api/test/comment/postcomment`;
 
             const response = await fetch(targetUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '69420' },
                 body: JSON.stringify({
                     content: commentText,
-                    boardId: post.boardId 
+                    boardId: post.boardId
                 }),
                 credentials: 'include',
             });
@@ -107,13 +109,14 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
         if (!editText.trim()) return;
 
         try {
-            const response = await fetch(`/back/api/test/comment/putcomment`, {
+            const response = await fetch(`${next_backend_url}api/test/comment/putcomment`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '69420'},
-                body: JSON.stringify({ content: editText,
+                headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '69420' },
+                body: JSON.stringify({
+                    content: editText,
                     boardId: post.boardId,
                     commentId: commentId
-                 }),
+                }),
                 credentials: 'include',
             });
             if (response.ok) {
@@ -130,9 +133,9 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
         if (!confirm("댓글을 삭제하시겠습니까?")) return;
 
         try {
-            const response = await fetch(`/back/api/test/comment/deletecomment/${commentId}`, {
+            const response = await fetch(`${next_backend_url}api/test/comment/deletecomment/${commentId}`, {
                 method: 'DELETE',
-                headers: {  'ngrok-skip-browser-warning': '69420'},
+                headers: { 'ngrok-skip-browser-warning': '69420' },
                 credentials: 'include',
             });
             if (response.ok) {
@@ -148,9 +151,9 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
         if (!confirm("삭제하시겠습니까?")) return;
 
         try {
-            const response = await fetch(`/back/api/test/board/deleteboard/${post.boardId}`, {
+            const response = await fetch(`${next_backend_url}api/test/board/deleteboard/${post.boardId}`, {
                 method: 'DELETE',
-                headers: {  'ngrok-skip-browser-warning': '69420'},
+                headers: { 'ngrok-skip-browser-warning': '69420' },
                 credentials: 'include',
             });
             if (response.ok) {
@@ -235,7 +238,7 @@ export default function BoardDetail({ post, onBack, onEdit, onDeleteSuccess, use
                 <section className="space-y-6 pb-10">
                     <h3 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-3">
                         COMMENTS
-                        <span className="text-orange-500 bg-orange-100 dark:bg-zinc-500/30 px-3 py-1 rounded-full text-sm">
+                        <span className="text-orange-400 bg-orange-100 dark:bg-zinc-500/30 px-3 py-1 rounded-full text-sm">
                             {comment.length}
                         </span>
                     </h3>

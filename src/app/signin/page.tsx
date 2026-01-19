@@ -13,7 +13,7 @@ export default function signinPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-
+  const next_backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
   const handleSignin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !password) {
@@ -22,7 +22,7 @@ export default function signinPage() {
     }
     setIsLoading(true);
     try {
-      const response = await fetch("/back/api/members/signup", {
+      const response = await fetch(`${next_backend_url}api/members/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

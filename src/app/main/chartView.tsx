@@ -9,7 +9,7 @@ import {
 import { FaShieldAlt, FaWheelchair, FaToilet, FaLayerGroup } from "react-icons/fa";
 import { MdBabyChangingStation } from "react-icons/md";
 import { useTheme } from 'next-themes';
-
+ const next_backend_url = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface Toilet {
     dataCd: string;
@@ -38,11 +38,12 @@ export default function ChartView() {
     useEffect(() => {
         const fetchToilets = async () => {
             try {
-                const response = await fetch("/back/api/test/toiletinfo/getallinfo",{
+                const response = await fetch(`${next_backend_url}api/test/toiletinfo/getallinfo`,{
                     method: "GET",
                     headers: {
                         "ngrok-skip-browser-warning": "69420", 
                     },
+                    credentials: "include"
                 });
                 const data = await response.json();
 
@@ -51,11 +52,12 @@ export default function ChartView() {
                     ...t
 
                 }));
-                const reviewRes = await fetch("/back/api/test/review/getreviewstat", {
+                const reviewRes = await fetch(`${next_backend_url}api/test/review/getreviewstat`, {
                     method: "GET",
                     headers: {
                         "ngrok-skip-browser-warning": "69420", 
                     },
+                    credentials: "include"
                 });
                 const reviewData = await reviewRes.json();
 

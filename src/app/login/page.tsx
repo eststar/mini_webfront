@@ -6,6 +6,8 @@ import { BsGoogle } from "react-icons/bs";
 import { SiNaver } from "react-icons/si";
 import { useTheme } from "next-themes";
 
+
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -13,7 +15,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-
+  const NEXT_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 
   const Spinner = () => (
@@ -54,7 +56,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/back/login", {
+      const response = await fetch(`${NEXT_BACKEND_URL}login`, {
         method: "POST",
         headers: {
           "ngrok-skip-browser-warning": "69420",
@@ -92,12 +94,13 @@ export default function LoginPage() {
   const handleSocialLogin = (provider: 'google' | 'naver') => {
     const returnUrl = encodeURIComponent(`${window.location.origin}/main`);
 
-    
+    localStorage.setItem("just_logged_in", "true");  
     // document.cookie = `return_to=${returnUrl}; path=/; max-age=300; SameSite=None; Secure`;
 
     
-    window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?target=${returnUrl}`
+    // window.location.href = `https://unlabeled-engrossingly-fallon.ngrok-free.dev/oauth2/authorization/${provider}?target=${returnUrl}`
     // window.location.href = `/back/oauth2/authorization/${provider}?target=${returnUrl}`
+    window.location.href = `${NEXT_BACKEND_URL}oauth2/authorization/${provider}?target=${returnUrl}`
   };
 
 
