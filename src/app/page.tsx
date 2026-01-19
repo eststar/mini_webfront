@@ -36,9 +36,9 @@ export default function Page() {
     const { scrollYProgress } = useScroll();
 
     return (
-        <main ref={containerRef} className="relative w-full bg-black flex flex-col items-center justify-center overflow-x-hidden">
+        <main ref={containerRef} className="relative w-full bg-black flex flex-col items-center justify-center overflow-x-hidden scrollbar-hide">
             <motion.div
-                className="fixed top-0 left-0 right-0 h-1 bg-orange-400 origin-left z-[9999]"
+                className="fixed top-0 left-0 right-0 h-1 bg-orange-400 origin-left z-9999"
                 style={{ scaleX: scrollYProgress }}
             />
 
@@ -50,7 +50,7 @@ export default function Page() {
                 >
                     <source src="/jeju.mp4" type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-black/80" />
             </div>
 
             <section className="relative z-20 min-h-screen w-full flex items-center justify-center">

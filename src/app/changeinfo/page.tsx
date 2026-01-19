@@ -164,7 +164,7 @@ export default function ChangeInfoPage() {
 
   return (
     <main className="fixed inset-0 overflow-hidden flex items-center justify-center p-6">
-      <div className="absolute inset-0 z-0 bg-linear-to-tr from-[#638388] via-[#ffe9c5] to-[#e0f5ff]" />
+      <div className="absolute inset-0 z-0 bg-linear-to-tr from-[#e0f5ff] via-[#ffe9c5] to-[#e0f5ff]" />
       {mounted && resolvedTheme === 'dark' && (
         <div className="absolute inset-0 z-10 pointer-events-none bg-zinc-950/80 mix-blend-multiply" />
       )}
@@ -179,7 +179,7 @@ export default function ChangeInfoPage() {
           <form onSubmit={handleUpdate} className="relative z-10">
             <motion.div variants={itemVars} className="mb-14">
               <h2 className="text-5xl font-[950] tracking-tighter uppercase text-slate-800 dark:text-white">
-                정보 <span className="text-orange-500">수정</span>
+                CHANGE <span className="text-orange-500">INFO</span>
               </h2>
             </motion.div>
 

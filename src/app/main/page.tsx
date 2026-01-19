@@ -1,15 +1,15 @@
 'use client';
 
-import {useState, useEffect, useRef} from 'react';
-import {motion, AnimatePresence} from 'framer-motion';
-import {useRouter} from 'next/navigation';
-import {FaMapMarkedAlt, FaClipboardList, FaChartPie} from 'react-icons/fa';
-import {useTheme} from 'next-themes';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { FaMapMarkedAlt, FaClipboardList, FaChartPie } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
 import MapView from './mapView';
 import BoardView from './boardView';
 import ChartView from './chartView';
-import {IoMdSettings} from 'react-icons/io';
-import {MdComputer, MdDarkMode, MdLightMode} from 'react-icons/md';
+import { IoMdSettings } from 'react-icons/io';
+import { MdComputer, MdDarkMode, MdLightMode } from 'react-icons/md';
 const NEXT_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 interface UserData {
 	nickname?: string;
@@ -22,7 +22,7 @@ const jejuPos = {
 	lng: 126.537,
 };
 
-export default function MainPage () {
+export default function MainPage() {
 	const router = useRouter();
 
 	const [activeTab, setActiveTab] = useState(0);
@@ -30,7 +30,7 @@ export default function MainPage () {
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [userData, setUserData] = useState<any>({});
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const {theme, setTheme, resolvedTheme} = useTheme();
+	const { theme, setTheme, resolvedTheme } = useTheme();
 	const [mounted, setMounted] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [isRealLocation, setIsRealLocation] = useState(() => {
@@ -72,7 +72,7 @@ export default function MainPage () {
 					setIsLoggedIn(true);
 					localStorage.setItem('user_nickname', data.nickname);
 					console.log('✅ 인증 성공:');
-					console.log(data);
+					// console.log(data);
 				}
 				else {
 					setIsLoggedIn(false);
@@ -99,18 +99,18 @@ export default function MainPage () {
 	}, []);
 
 	useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-        if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
-            setIsMenuOpen(false); 
-        }
-    };
+		const handleClickOutside = (event: MouseEvent) => {
+			if (isMenuOpen && menuRef.current && !menuRef.current.contains(event.target as Node)) {
+				setIsMenuOpen(false);
+			}
+		};
 
-    document.addEventListener('mousedown', handleClickOutside);
-    
-    return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-    };
-}, [isMenuOpen]);
+		document.addEventListener('mousedown', handleClickOutside);
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [isMenuOpen]);
 
 	useEffect(() => {
 		if (isClient) {
@@ -134,12 +134,12 @@ export default function MainPage () {
 						console.error('GPS error', error);
 						setIsRealLocation(false);
 					},
-					{enableHighAccuracy: true, timeout: 10000, maximumAge: 60000},
+					{ enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
 				);
 			}
 		}
 		else {
-			setCurrentPos({...jejuPos});
+			setCurrentPos({ ...jejuPos });
 		}
 	}, [isRealLocation]);
 
@@ -148,15 +148,15 @@ export default function MainPage () {
 		return null;
 	}
 	const menuItems = [
-		{icon: <FaMapMarkedAlt />, id: 0},
-		{icon: <FaChartPie />, id: 1},
-		{icon: <FaClipboardList />, id: 2},
+		{ icon: <FaMapMarkedAlt />, id: 0 },
+		{ icon: <FaChartPie />, id: 1 },
+		{ icon: <FaClipboardList />, id: 2 },
 	];
 
 	const themeItems = [
-		{icon: <MdComputer />, value: 'system'},
-		{icon: <MdLightMode />, value: 'light'},
-		{icon: <MdDarkMode />, value: 'dark'},
+		{ icon: <MdComputer />, value: 'system' },
+		{ icon: <MdLightMode />, value: 'light' },
+		{ icon: <MdDarkMode />, value: 'dark' },
 	];
 
 	const renderContent = () => {
@@ -212,7 +212,7 @@ export default function MainPage () {
 	return (
 		<main className='relative w-screen h-screen overflow-hidden inset-0 z-0 bg-linear-to-tr from-[#e0f5ff] via-[#ffe9c5] to-[#e0f5ff] text-black font-sans selection:bg-orange-100 dark:text-white'>
 			{mounted && resolvedTheme === 'dark' && <div className='absolute inset-0 z-10 pointer-events-none bg-zinc-950/80 mix-blend-multiply' />}
-			<motion.nav initial={{y: -120, opacity: 1}} animate={{y: 0, opacity: 1}} className='absolute top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-30 flex justify-between items-center pointer-events-none'>
+			<motion.nav initial={{ y: -120, opacity: 1 }} animate={{ y: 0, opacity: 1 }} className='absolute top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-30 flex justify-between items-center pointer-events-none'>
 				<div className='flex gap-2 md:gap-4 pointer-events-auto'>
 					<div onClick={() => router.push('/')} className='group relative flex items-center gap-2 px-5 py-3 md:px-8 md:py-5 bg-white/30 backdrop-blur-2xl border border-white/50 rounded-full md:rounded-[40px] shadow-2xl cursor-pointer transition-all duration-300  active:scale-95 dark:bg-zinc-600/40 dark:border-zinc-400/10 hover:bg-write/50 dark:hover:bg-zinc-500/40'>
 						<h1 className='text-lg md:text-3xl font-[1000] tracking-widest uppercase leading-none'>
@@ -230,7 +230,7 @@ export default function MainPage () {
 
 					<AnimatePresence>
 						{isMenuOpen && (
-							<motion.div initial={{opacity: 0, y: -15, scale: 1}} animate={{opacity: 1, y: 0, scale: 1}} exit={{opacity: 0, y: -15, scale: 1}} transition={{duration: 0.2, ease: 'easeOut'}} className='absolute top-[calc(100%+12px)] right-0 w-64 md:w-72 bg-white/20 backdrop-blur-2xl border border-white/50 rounded-3xl md:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden z-50 p-6 space-y-5 dark:bg-zinc-600/40 dark:border-zinc-400/10'>
+							<motion.div initial={{ opacity: 0, y: -15, scale: 1 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -15, scale: 1 }} transition={{ duration: 0.2, ease: 'easeOut' }} className='absolute top-[calc(100%+12px)] right-0 w-64 md:w-72 bg-white/20 backdrop-blur-2xl border border-white/50 rounded-3xl md:rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden z-50 p-6 space-y-5 dark:bg-zinc-600/40 dark:border-zinc-400/10'>
 								<div className='space-y-3'>
 									<p className='text-[10px] font-black text-slate-400 dark:text-white/80 uppercase tracking-widest px-1'>Appearance</p>
 									<div className='flex items-center p-1  backdrop-blur-md border border-black/5 rounded-2xl relative'>
@@ -238,7 +238,7 @@ export default function MainPage () {
 											<button key={item.value} onClick={() => setTheme(item.value)} className='relative flex-1 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center cursor-pointer z-20'>
 												<span className={`text-xl transition-all duration-300 z-40 ${mounted && theme === item.value ? 'text-white' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-100'}`}>{item.icon}</span>
 
-												{mounted && theme === item.value && <motion.div layoutId='theme-pill' className='absolute inset-0 bg-orange-400 rounded-xl z-10 shadow-lg' transition={{type: 'spring', stiffness: 400, damping: 30}} />}
+												{mounted && theme === item.value && <motion.div layoutId='theme-pill' className='absolute inset-0 bg-orange-400 rounded-xl z-10 shadow-lg' transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
 											</button>
 										))}
 									</div>
@@ -257,7 +257,7 @@ export default function MainPage () {
 													<span className='text-sm font-bold text-slate-700 dark:text-white/90'>{isRealLocation ? '현 위치' : '제주도'}</span>
 												</div>
 												<div onClick={() => setIsRealLocation(!isRealLocation)} className={`relative w-14 h-7 rounded-full cursor-pointer transition-all duration-500 flex items-center px-1.5 ${isRealLocation ? 'bg-orange-400 ' : 'bg-slate-400 dark:bg-zinc-700'}`}>
-													<motion.div animate={{x: isRealLocation ? 24 : 0}} transition={{type: 'spring', stiffness: 400, damping: 25}} className='w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center' />
+													<motion.div animate={{ x: isRealLocation ? 24 : 0 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }} className='w-5 h-5 bg-white rounded-full shadow-md flex items-center justify-center' />
 												</div>
 											</div>
 										</div>
@@ -304,18 +304,18 @@ export default function MainPage () {
 
 			<div className='w-full h-full relative z-10 overflow-hidden'>
 				<AnimatePresence mode='wait'>
-					<motion.div key={activeTab} initial={{opacity: 0, scale: 0.99}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 1.01}} transition={{duration: 0.25}} className='w-full h-full'>
+					<motion.div key={activeTab} initial={{ opacity: 0, scale: 0.99 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.01 }} transition={{ duration: 0.25 }} className='w-full h-full'>
 						{renderContent()}
 					</motion.div>
 				</AnimatePresence>
 			</div>
 
-			<motion.div initial={{y: 120, opacity: 1}} animate={{y: 0, opacity: 1}} className='absolute bottom-6 left-0 right-0 z-30 flex justify-center pointer-events-none'>
+			<motion.div initial={{ y: 120, opacity: 1 }} animate={{ y: 0, opacity: 1 }} className='absolute bottom-6 left-0 right-0 z-30 flex justify-center pointer-events-none'>
 				<div className='flex items-center p-1.5 bg-white/20 backdrop-blur-2xl border border-white/60 rounded-[30px] md:rounded-[40px] shadow-2xl pointer-events-auto relative dark:bg-zinc-600/40 dark:border-zinc-400/10'>
 					{menuItems.map((item) => (
 						<button key={item.id} onClick={() => setActiveTab(item.id)} className={`relative px-7 py-4 md:px-10 md:py-5 rounded-[25px] md:rounded-[35px] transition-colors duration-300 flex items-center justify-center cursor-pointer ${activeTab === item.id ? 'text-white' : 'text-slate-700 hover:text-black'}`}>
 							<span className={`text-2xl md:text-3xl relative z-30 transition-all duration-300 active:scale-75 ${activeTab === item.id ? 'text-white' : 'text-zinc-500'}`}>{item.icon}</span>
-							{activeTab === item.id && <motion.div layoutId='active-pill' className='absolute inset-0 bg-orange-400/90 rounded-[25px] md:rounded-[35px] z-10' transition={{type: 'spring', stiffness: 400, damping: 30}} />}
+							{activeTab === item.id && <motion.div layoutId='active-pill' className='absolute inset-0 bg-orange-400/90 rounded-[25px] md:rounded-[35px] z-10' transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
 						</button>
 					))}
 				</div>

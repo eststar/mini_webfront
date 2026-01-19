@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from "framer-motion";
-import { FaArrowLeft, FaCheck, FaPaperPlane, FaPenNib } from "react-icons/fa";
+import { FaArrowLeft,  FaPaperPlane, } from "react-icons/fa";
 
 interface Board {
     boardId: number;
