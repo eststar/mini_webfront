@@ -238,7 +238,7 @@ export default function ChartView() {
 
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
-                                <Pie data={genderStats} innerRadius={80} outerRadius={110} paddingAngle={5} dataKey="value" isAnimationActive={true} animationEasing="ease-out" animationDuration={500} stroke="none"
+                                <Pie data={genderStats} innerRadius={80} outerRadius={110} paddingAngle={5} dataKey="value"  isAnimationActive={true} animationEasing="ease-out" animationDuration={500} stroke="none"
                                     labelLine={false}
                                     label={({ cx, cy, midAngle = 0, innerRadius, outerRadius, value }) => {
                                         const RADIAN = Math.PI / 180;

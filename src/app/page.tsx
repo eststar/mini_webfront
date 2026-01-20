@@ -233,7 +233,7 @@ export default function Page() {
                                     </a>
                                     <span className="font-black tracking-widest text-3xl uppercase">Front-end Developer</span>
                                 </div>
-                                <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-l-4 border-orange-400 pl-4">"여기에 소감 입력."</p>
+                                <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-l-4 border-orange-400 pl-4">"시간 가는 줄 모르고 만들었습니다. 웹개발 최고!"</p>
                                 <div className="pt-10 space-y-4">
                                     <h4 className="flex items-center gap-2 font-black text-orange-400 tracking-widest uppercase text-2xl "><FaCode /> Technical Spec</h4>
                                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 font-bold text-xl text-white uppercase tracking-tighter">
@@ -266,7 +266,7 @@ export default function Page() {
                                         <FaGithub size={35} />
                                     </a>
                                 </div>
-                                <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-r-4 border-orange-400 pr-4 md:border-l-0">"여기에 소감 입력."</p>
+                                <p className="text-xl text-zinc-300 font-bold leading-relaxed italic border-r-4 border-orange-400 pr-4 md:border-l-0">"뭘 하든 배울게 많아서 도움이 되었다."</p>
                                 <div className="pt-10 space-y-4 w-full">
                                     <h4 className="flex items-center justify-end gap-2 font-black text-orange-400 tracking-widest uppercase text-2xl">Technical Spec <FaTerminal /></h4>
                                     <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-xl font-bold text-white tracking-tighter">
